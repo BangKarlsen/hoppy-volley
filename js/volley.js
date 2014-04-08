@@ -3,20 +3,22 @@
     var game = new Phaser.Game(800, 400, Phaser.AUTO, 'volley', {
         preload: preload,
         create: create,
-        update: update
+        update: update,
+        render: render
     });
 
     function preload() {
-
         game.load.image('sky', 'assets/sky.png');
         game.load.image('ground', 'assets/platform.png');
         game.load.image('dude', 'assets/phaser-dude.png');
-
+        game.load.image('ball', 'assets/pangball.png');
     }
 
     var player;
     var platforms;
     var cursors;
+    var ball;
+    var isBallGravityOn = false;
 
 
     function create() {
@@ -53,17 +55,29 @@
         player.body.bounce.y = 0.3;
         player.body.gravity.y = 450;
         player.body.collideWorldBounds = true;
-        player.body.drag.x = 250;
+        player.body.drag.x = 450;
+
+        // Create the ball
+        ball = game.add.sprite(game.world.width / 3, game.world.height / 2, 'ball');
+        game.physics.enable(ball);
+        ball.body.bounce.setTo(0.7, 0.7);
+        // Set ball initial gravity to 0. Activate gravity when player hits ball the first time.
+        ball.body.gravity.y = 0;
+        ball.body.collideWorldBounds = true;
+        ball.body.drag.setTo(50, 50);
 
         //  Our controls.
         cursors = game.input.keyboard.createCursorKeys();
-
     }
 
     function update() {
-
-        //  Collide the player and the stars with the platforms
+        if (!isBallGravityOn) {
+            game.physics.arcade.overlap(player, ball, activateBallGravity, null, this);
+        }
+        //  Collide the player and the ball with the platforms
         game.physics.arcade.collide(player, platforms);
+        game.physics.arcade.collide(ball, platforms);
+        game.physics.arcade.collide(player, ball);
 
         //  Reset the players acceleration
         player.body.acceleration.x = 0;
@@ -79,6 +93,14 @@
         if (cursors.up.isDown && player.body.touching.down) {
             player.body.velocity.y = -300;
         }
+    }
+
+    function activateBallGravity() {
+        ball.body.gravity.y = 250;
+        isBallGravityOn = true;
+    }
+
+    function render() {
 
     }
 
