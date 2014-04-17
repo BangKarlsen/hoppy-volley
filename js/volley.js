@@ -18,90 +18,101 @@
     var platforms;
     var cursors;
     var ball;
-    var isBallGravityOn = false;
+    var result;
 
 
     function create() {
-
-        //  We're going to be using physics, so enable the Arcade Physics system
-        game.physics.startSystem(Phaser.Physics.ARCADE);
-
         //  A simple background for our game
         game.add.sprite(0, 0, 'sky');
-
-        //  The platforms group contains the ground and the 2 ledges we can jump on
-        platforms = game.add.group();
-
-        //  We will enable physics for any object that is created in this group
-        platforms.enableBody = true;
-
-        // Here we create the ground.
-        var ground = platforms.create(0, game.world.height - 64, 'ground');
-
-        //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-        ground.scale.setTo(2, 2);
-
-        //  This stops it from falling away when you jump on it
-        ground.body.immovable = true;
-
-
         // The player and its settings
-        player = game.add.sprite(32, game.world.height - 150, 'dude');
-
-        //  We need to enable physics on the player
-        game.physics.arcade.enable(player);
-
-        //  Player physics properties. Give the little guy a slight bounce.
-        player.body.bounce.y = 0.3;
-        player.body.gravity.y = 450;
-        player.body.collideWorldBounds = true;
-        player.body.drag.x = 450;
-
+        player = game.add.sprite(32, game.world.height - 35, 'dude');
         // Create the ball
-        ball = game.add.sprite(game.world.width / 3, game.world.height / 2, 'ball');
-        game.physics.enable(ball);
-        ball.body.bounce.setTo(0.7, 0.7);
-        // Set ball initial gravity to 0. Activate gravity when player hits ball the first time.
-        ball.body.gravity.y = 0;
-        ball.body.collideWorldBounds = true;
-        ball.body.drag.setTo(50, 50);
+        ball = game.add.sprite(35, game.world.height / 2, 'ball');
 
-        //  Our controls.
+
+        //  We're going to be using physics, so enable the Physics system
+        game.physics.startSystem(Phaser.Physics.P2JS);
+        game.physics.p2.defaultRestitution = 0.9;
+        game.physics.p2.gravity.y = 800;
+
+        //  We need to enable physics on all sprites
+        game.physics.p2.enable([player, ball], false);
+        ball.body.setCircle(ball.width / 2);
+        ball.body.mass = 0.3;
+
+        player.body.fixedRotation = true;
+        player.body.onBeginContact.add(blockHit, this);
+
+        var playerMaterial = game.physics.p2.createMaterial('playerMaterial', player.body);
+        var ballMaterial = game.physics.p2.createMaterial('ballMaterial', ball.body);
+        var worldMaterial = game.physics.p2.createMaterial('worldMaterial');
+
+        //  4 trues = the 4 faces of the world in left, right, top, bottom order
+        game.physics.p2.setWorldMaterial(worldMaterial, true, true, true, true);
+
+        var ballWorldContactMaterial = game.physics.p2.createContactMaterial(ballMaterial, worldMaterial);
+        ballWorldContactMaterial.friction = 0.1; // Friction to use in the contact of these two materials.
+        ballWorldContactMaterial.restitution = 0.8; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+
+        var playerWorldContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
+        playerWorldContactMaterial.friction = 0.9; // Friction to use in the contact of these two materials.
+        playerWorldContactMaterial.restitution = 0.3; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+
+        var playerBallContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
+        playerBallContactMaterial.friction = 0.9; // Friction to use in the contact of these two materials.
+        playerBallContactMaterial.restitution = 1.2; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+
         cursors = game.input.keyboard.createCursorKeys();
     }
 
-    function update() {
-        if (!isBallGravityOn) {
-            game.physics.arcade.overlap(player, ball, activateBallGravity, null, this);
-        }
-        //  Collide the player and the ball with the platforms
-        game.physics.arcade.collide(player, platforms);
-        game.physics.arcade.collide(ball, platforms);
-        game.physics.arcade.collide(player, ball);
+    function blockHit(body, shapeA, shapeB, equation) {
+        //  The block hit something
+        //  This callback is sent: the Body it collides with
+        //  shapeA is the shape in the calling Body involved in the collision
+        //  shapeB is the shape in the Body it hit
+        //  equation is an array with the contact equation data in it
+        result = 'You last hit: ' + body.sprite.key;
 
+    }
+
+    function update() {
         //  Reset the players acceleration
-        player.body.acceleration.x = 0;
+        player.body.setZeroForce();
 
         if (cursors.left.isDown) {
             //  Move to the left
-            player.body.velocity.x = -150;
+            player.body.moveLeft(250);
         } else if (cursors.right.isDown) {
             //  Move to the right
-            player.body.velocity.x = 150;
+            player.body.moveRight(250);
         }
         //  Allow the player to jump if they are touching the ground.
-        if (cursors.up.isDown && player.body.touching.down) {
-            player.body.velocity.y = -300;
+        if (cursors.up.isDown && checkIfCanJump()) {
+            player.body.moveUp(500);
         }
     }
 
-    function activateBallGravity() {
-        ball.body.gravity.y = 250;
-        isBallGravityOn = true;
+    function checkIfCanJump() {
+        var yAxis = p2.vec2.fromValues(0, 1);
+        var result = false;
+
+        for (var i = 0; i < game.physics.p2.world.narrowphase.contactEquations.length; i++) {
+            var c = game.physics.p2.world.narrowphase.contactEquations[i];
+
+            if (c.bi === player.body.data || c.bj === player.body.data) {
+                var d = p2.vec2.dot(c.ni, yAxis); // Normal dot Y-axis
+                if (c.bi === player.body.data) {
+                    d *= -1;
+                }
+                if (d > 0.5) result = true;
+            }
+        }
+        return result;
     }
 
     function render() {
-
+        game.debug.text(result, 32, 32);
+        game.debug.text('Ball mass:' + ball.body.mass, 32, 32 * 2);
     }
 
 }());
