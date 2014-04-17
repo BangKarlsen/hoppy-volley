@@ -1,5 +1,15 @@
 (function() {
 
+    var player;
+    var platforms;
+    var cursors;
+    var ball;
+    var debugBallCollision;
+
+    var Player = function() {
+
+    }
+
     var game = new Phaser.Game(800, 400, Phaser.AUTO, 'volley', {
         preload: preload,
         create: create,
@@ -14,21 +24,12 @@
         game.load.image('ball', 'assets/pangball.png');
     }
 
-    var player;
-    var platforms;
-    var cursors;
-    var ball;
-    var result;
-
-
     function create() {
         //  A simple background for our game
         game.add.sprite(0, 0, 'sky');
-        // The player and its settings
+        // The player and the ball
         player = game.add.sprite(32, game.world.height - 35, 'dude');
-        // Create the ball
         ball = game.add.sprite(35, game.world.height / 2, 'ball');
-
 
         //  We're going to be using physics, so enable the Physics system
         game.physics.startSystem(Phaser.Physics.P2JS);
@@ -39,9 +40,10 @@
         game.physics.p2.enable([player, ball], false);
         ball.body.setCircle(ball.width / 2);
         ball.body.mass = 0.3;
+        ball.body.gravity.setMagnitude(0);
 
         player.body.fixedRotation = true;
-        player.body.onBeginContact.add(blockHit, this);
+        player.body.onBeginContact.add(playerHit, this);
 
         var playerMaterial = game.physics.p2.createMaterial('playerMaterial', player.body);
         var ballMaterial = game.physics.p2.createMaterial('ballMaterial', ball.body);
@@ -65,25 +67,16 @@
         cursors = game.input.keyboard.createCursorKeys();
     }
 
-    function blockHit(body, shapeA, shapeB, equation) {
-        //  The block hit something
-        //  This callback is sent: the Body it collides with
-        //  shapeA is the shape in the calling Body involved in the collision
-        //  shapeB is the shape in the Body it hit
-        //  equation is an array with the contact equation data in it
-        result = 'You last hit: ' + body.sprite.key;
-
+    function playerHit(body, shapeA, shapeB, equation) {
+        debugBallCollision = 'You last hit: ' + body.sprite.key;
     }
 
     function update() {
-        //  Reset the players acceleration
         player.body.setZeroForce();
 
         if (cursors.left.isDown) {
-            //  Move to the left
             player.body.moveLeft(250);
         } else if (cursors.right.isDown) {
-            //  Move to the right
             player.body.moveRight(250);
         }
         //  Allow the player to jump if they are touching the ground.
@@ -111,7 +104,7 @@
     }
 
     function render() {
-        game.debug.text(result, 32, 32);
+        game.debug.text(debugBallCollision, 32, 32);
         game.debug.text('Ball mass:' + ball.body.mass, 32, 32 * 2);
     }
 
