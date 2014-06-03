@@ -62,7 +62,7 @@
             moveRight: moveRight,
             jump: jump
         };
-    }
+    };
 
 
     var Ball = function() {
@@ -85,7 +85,7 @@
             isActive: isGravityActive,
             activate: activatePhysics
         };
-    }
+    };
 
     var Net = function() {
         var sprite = game.add.sprite(game.world.width / 2, game.world.height / 2 + 115, 'net');
@@ -96,14 +96,7 @@
         // mass is not set or if mass = 1 ... why?
         sprite.body.mass = 0.1;
         sprite.body.fixedRotation = true;
-    }
-
-    var game = new Phaser.Game(800, 400, Phaser.AUTO, 'volley', {
-        preload: preload,
-        create: create,
-        update: update,
-        render: render
-    });
+    };
 
     function preload() {
         game.load.image('sky', 'assets/sky.png');
@@ -149,7 +142,7 @@
         ballWorldContactMaterial.restitution = 0.8; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 
         var playerWorldContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
-        playerWorldContactMaterial.friction = 1.9; // Friction to use in the contact of these two materials.
+        playerWorldContactMaterial.friction = 0.9; // Friction to use in the contact of these two materials.
         playerWorldContactMaterial.restitution = 0.3; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 
         var playerBallContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
@@ -157,32 +150,73 @@
         playerBallContactMaterial.restitution = 1.2; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
     }
 
-    function update() {
-
-        if (cursors.left.isDown) {
-            player2.moveLeft();
-        } else if (cursors.right.isDown) {
-            player2.moveRight();
-        }
-        //  Allow the player to jump if they are touching the ground.
-        if (cursors.up.isDown && player2.canJump()) {
-            player2.jump();
-        }
-
-        if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
-            player1.moveLeft();
-        } else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
-            player1.moveRight();
-        }
-        //  Allow the player to jump if they are touching the ground.
-        if (game.input.keyboard.isDown(Phaser.Keyboard.W) && player1.canJump()) {
-            player1.jump();
-        }
-    }
-
     function render() {
         game.debug.text('Player1: ' + player1.name, 32, 32);
         game.debug.text('Player2: ' + player2.name, game.width - 160, 32);
     }
+
+    function update() {
+
+        // get commands from input
+        var commands = handleInput();
+        // execute command
+        //if (commands) {
+        commands.forEach(function(command) {
+            command();
+        });
+        //}
+    }
+
+    function handleInput() {
+        var commandList = [];
+
+        // Handle player2
+        if (cursors.left.isDown) {
+            commandList.push(moveLeftCommand(player2));
+        }
+        if (cursors.right.isDown) {
+            commandList.push(moveRightCommand(player2));
+        }
+        if (cursors.up.isDown && player2.canJump()) {
+            commandList.push(jumpCommand(player2));
+        }
+
+        // Handle player1
+        if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
+            commandList.push(moveLeftCommand(player1));
+        }
+        if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+            commandList.push(moveRightCommand(player1));
+        }
+        if (game.input.keyboard.isDown(Phaser.Keyboard.W) && player1.canJump()) {
+            commandList.push(jumpCommand(player1));
+        }
+        return commandList;
+    }
+
+    function jumpCommand(player) {
+        return function() {
+            player.jump();
+        };
+    }
+
+    function moveRightCommand(player) {
+        return function() {
+            player.moveRight();
+        };
+    }
+
+    function moveLeftCommand(player) {
+        return function() {
+            player.moveLeft();
+        };
+    }
+
+    var game = new Phaser.Game(800, 400, Phaser.AUTO, 'volley', {
+        preload: preload,
+        create: create,
+        update: update,
+        render: render
+    });
 
 }();
