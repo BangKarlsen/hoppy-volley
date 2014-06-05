@@ -55,6 +55,7 @@
 
         return {
             name: playerName,
+            input: inputConfig,
             sprite: sprite,
             canJump: checkIfCanJump,
             moveLeft: moveLeft,
@@ -114,8 +115,22 @@
         game.physics.p2.gravity.y = 800;
 
         // Create the ball and the players
-        player1 = new Player('Bobby', 32);
-        player2 = new Player('Tobby', game.world.width - 32);
+        var inputPlayer1 = {
+            type: 'keyboard',
+            left: Phaser.Keyboard.A,
+            right: Phaser.Keyboard.D,
+            jump: Phaser.Keyboard.W
+        }
+
+        var inputPlayer2 = {
+            type: 'keyboard',
+            left: Phaser.Keyboard.LEFT,
+            right: Phaser.Keyboard.RIGHT,
+            jump: Phaser.Keyboard.UP
+        }
+
+        player1 = new Player('Bobby', 32, inputPlayer1);
+        player2 = new Player('Tobby', game.world.width - 32, inputPlayer2);
         ball = new Ball();
         net = new Net();
 
@@ -157,7 +172,10 @@
     function update() {
 
         // get commands from input
-        var commands = handleInput();
+        var commands = [];
+
+        commands = commands.concat(handleInput(player1));
+        commands = commands.concat(handleInput(player2));
 
         // execute commands
         commands.forEach(function(command) {
@@ -165,31 +183,18 @@
         });
     }
 
-    function handleInput() {
+    function handleInput(player) {
         var commandList = [];
 
-        // Handle player2
-        if (cursors.left.isDown) {
-            commandList.push(moveLeftCommand(player2));
+        if (game.input.keyboard.isDown(player.input.left)) {
+            commandList.push(moveLeftCommand(player));
         }
-        if (cursors.right.isDown) {
-            commandList.push(moveRightCommand(player2));
+        if (game.input.keyboard.isDown(player.input.right)) {
+            commandList.push(moveRightCommand(player));
         }
-        if (cursors.up.isDown && player2.canJump()) {
-            commandList.push(jumpCommand(player2));
+        if (game.input.keyboard.isDown(player.input.jump) && player.canJump()) {
+            commandList.push(jumpCommand(player));
         }
-
-        // Handle player1
-        if (game.input.keyboard.isDown(Phaser.Keyboard.A)) {
-            commandList.push(moveLeftCommand(player1));
-        }
-        if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
-            commandList.push(moveRightCommand(player1));
-        }
-        if (game.input.keyboard.isDown(Phaser.Keyboard.W) && player1.canJump()) {
-            commandList.push(jumpCommand(player1));
-        }
-
         return commandList;
     }
 
