@@ -7,11 +7,10 @@
     var net;
 
 
-    var Player = function(playerName, startPosX) {
+    var Player = function(playerName, startPosX, inputConfig) {
         var score;
         var sprite = game.add.sprite(startPosX, game.world.height - 35, 'dude');
         sprite.scale.setTo(1.5, 1.5);
-
         game.physics.p2.enable(sprite, false);
         sprite.body.fixedRotation = true;
         sprite.body.onBeginContact.add(function(body, shapeA, shapeB, equation) {
@@ -43,11 +42,11 @@
         }
 
         function moveLeft() {
-            sprite.body.moveLeft(300);
+            sprite.body.moveLeft(200);
         }
 
         function moveRight() {
-            sprite.body.moveRight(300);
+            sprite.body.moveRight(200);
         }
 
         function jump() {
@@ -142,7 +141,7 @@
         ballWorldContactMaterial.restitution = 0.8; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 
         var playerWorldContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
-        playerWorldContactMaterial.friction = 0.9; // Friction to use in the contact of these two materials.
+        playerWorldContactMaterial.friction = 0.99; // Friction to use in the contact of these two materials.
         playerWorldContactMaterial.restitution = 0.3; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 
         var playerBallContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
@@ -159,12 +158,11 @@
 
         // get commands from input
         var commands = handleInput();
-        // execute command
-        //if (commands) {
+
+        // execute commands
         commands.forEach(function(command) {
             command();
         });
-        //}
     }
 
     function handleInput() {
@@ -191,6 +189,7 @@
         if (game.input.keyboard.isDown(Phaser.Keyboard.W) && player1.canJump()) {
             commandList.push(jumpCommand(player1));
         }
+
         return commandList;
     }
 
