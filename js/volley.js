@@ -2,13 +2,12 @@
 
     var player1;
     var player2;
-    var cursors;
     var ball;
     var net;
 
 
     var Player = function(playerName, startPosX, inputConfig) {
-        var score;
+        var score = 0;
         var sprite = game.add.sprite(startPosX, game.world.height - 35, 'dude');
         sprite.scale.setTo(1.5, 1.5);
         game.physics.p2.enable(sprite, false);
@@ -55,6 +54,7 @@
 
         return {
             name: playerName,
+            score: score,
             input: inputConfig,
             sprite: sprite,
             canJump: checkIfCanJump,
@@ -114,7 +114,7 @@
         game.physics.p2.defaultRestitution = 0.9;
         game.physics.p2.gravity.y = 800;
 
-        // Create the ball and the players
+        // Create input configuration for the players
         var inputPlayer1 = {
             type: 'keyboard',
             left: Phaser.Keyboard.A,
@@ -134,12 +134,10 @@
         ball = new Ball();
         net = new Net();
 
-        initialiseAllMaterials();
-
-        cursors = game.input.keyboard.createCursorKeys();
+        initialiseMaterials();
     }
 
-    function initialiseAllMaterials() {
+    function initialiseMaterials() {
         var playerMaterial = game.physics.p2.createMaterial('playerMaterial');
         var ballMaterial = game.physics.p2.createMaterial('ballMaterial', ball.sprite.body);
         var worldMaterial = game.physics.p2.createMaterial('worldMaterial');
@@ -165,17 +163,16 @@
     }
 
     function render() {
-        game.debug.text('Player1: ' + player1.name, 32, 32);
-        game.debug.text('Player2: ' + player2.name, game.width - 160, 32);
+        game.debug.text(player1.name + ' ' + player1.score, 64, 32);
+        game.debug.text(player2.name + ' ' + player2.score, game.width - 160, 32);
     }
 
     function update() {
-
-        // get commands from input
         var commands = [];
 
-        commands = commands.concat(handleInput(player1));
-        commands = commands.concat(handleInput(player2));
+        // get commands from input
+        commands = handleInput(commands, player1);
+        commands = handleInput(commands, player2);
 
         // execute commands
         commands.forEach(function(command) {
@@ -183,9 +180,7 @@
         });
     }
 
-    function handleInput(player) {
-        var commandList = [];
-
+    function handleInput(commandList, player) {
         if (game.input.keyboard.isDown(player.input.left)) {
             commandList.push(moveLeftCommand(player));
         }
