@@ -114,7 +114,7 @@
         game.physics.p2.defaultRestitution = 0.9;
         game.physics.p2.gravity.y = 800;
 
-        // Create input configuration for the players
+        // Define input configuration for the players
         var inputPlayer1 = {
             type: 'keyboard',
             left: Phaser.Keyboard.A,
