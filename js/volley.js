@@ -9,14 +9,18 @@
     var Player = function(playerName, startPosX, inputConfig) {
         var score = 0;
         var sprite = game.add.sprite(startPosX, game.world.height - 35, 'dude');
-        sprite.scale.setTo(1.5, 1.5);
         game.physics.p2.enable(sprite, false);
+
+        sprite.body.clearShapes();
+        sprite.body.loadPolygon('physicsData', 'robo2');
+
         sprite.body.fixedRotation = true;
         sprite.body.onBeginContact.add(function(body, shapeA, shapeB, equation) {
             if (body.sprite.key === 'ball' && !ball.isActive) {
                 ball.activate();
             }
         }, this);
+        // sprite.scale.setTo(0.4, 0.4);
 
         // Allow the player to jump if they are touching the ground.
         // Code is from 'tilemap gravity' example, no idea why it works...
@@ -101,9 +105,13 @@
     function preload() {
         game.load.image('sky', 'assets/sky.png');
         game.load.image('ground', 'assets/platform.png');
-        game.load.image('dude', 'assets/phaser-dude.png');
+        // game.load.image('dude', 'assets/phaser-dude.png');
+        game.load.image('dude', 'assets/robo2.png');
         game.load.image('ball', 'assets/pangball.png');
         game.load.image('net', 'assets/bg.png');
+
+        //  Load our physics data exported from PhysicsEditor
+        game.load.physics('physicsData', 'assets/robo2.json');
     }
 
     function create() {
