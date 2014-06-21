@@ -16,7 +16,7 @@
 
         sprite.body.fixedRotation = true;
         sprite.body.onBeginContact.add(function(body, shapeA, shapeB, equation) {
-            if (body.sprite.key === 'ball' && !ball.isActive) {
+            if (body && body.sprite.key === 'ball' && !ball.isActive) {
                 ball.activate();
             }
         }, this);
@@ -31,9 +31,9 @@
             for (var i = 0; i < game.physics.p2.world.narrowphase.contactEquations.length; i++) {
                 var c = game.physics.p2.world.narrowphase.contactEquations[i];
 
-                if (c.bi === sprite.body.data || c.bj === sprite.body.data) {
-                    var d = p2.vec2.dot(c.ni, yAxis); // Normal dot Y-axis
-                    if (c.bi === sprite.body.data) {
+                if (c.bodyA === sprite.body.data || c.bodyB === sprite.body.data) {
+                    var d = p2.vec2.dot(c.normalA, yAxis); // Normal dot Y-axis
+                    if (c.bodyA === sprite.body.data) {
                         d *= -1;
                     }
                     if (d > 0.5) {
