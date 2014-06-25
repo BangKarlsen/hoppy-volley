@@ -26,6 +26,7 @@ define([
         this.game.load.image('dude', 'assets/robo2.png');
         this.game.load.image('ball', 'assets/pangball.png');
         this.game.load.image('net', 'assets/bg.png');
+
         //  Load player shape data exported from PhysicsEditor
         this.game.load.physics('physicsData', 'assets/robo2.json');
     };
@@ -70,23 +71,22 @@ define([
 
             player1.sprite.body.setMaterial(playerMaterial);
             player2.sprite.body.setMaterial(playerMaterial);
-            // game.physics.p2.setMaterial(playerMaterial, [player1.sprite.body, player2.sprite.body]);
 
             //  4 trues = the 4 faces of the world in left, right, top, bottom order
             game.physics.p2.setWorldMaterial(worldMaterial, true, true, true, true);
 
             var ballWorldContactMaterial = game.physics.p2.createContactMaterial(ballMaterial, worldMaterial);
             ballWorldContactMaterial.friction = 0.1; // Friction to use in the contact of these two materials.
-            ballWorldContactMaterial.restitution = 0.8; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+            ballWorldContactMaterial.restitution = 0.9; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 
             var playerWorldContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
-            playerWorldContactMaterial.friction = 0.99; // Friction to use in the contact of these two materials.
+            playerWorldContactMaterial.friction = 0.5; // Friction to use in the contact of these two materials.
             playerWorldContactMaterial.restitution = 0.3; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 
             var playerBallContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
             playerBallContactMaterial.friction = 0.9; // Friction to use in the contact of these two materials.
             playerBallContactMaterial.restitution = 1.5; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
-        })(this.player1, this.player2, this.ball, this.game);
+        }(this.player1, this.player2, this.ball, this.game));
     };
 
     Game.prototype.update = function() {
@@ -132,7 +132,6 @@ define([
             command();
         });
     }
-
 
 
     Game.prototype.render = function() {

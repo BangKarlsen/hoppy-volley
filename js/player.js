@@ -33,15 +33,15 @@ define(function() {
     Player.prototype.score = 0;
 
     Player.prototype.moveLeft = function() {
-        this.sprite.body.moveLeft(200);
+        this.sprite.body.moveLeft(170);
     };
 
     Player.prototype.moveRight = function() {
-        this.sprite.body.moveRight(200);
+        this.sprite.body.moveRight(170);
     };
 
     Player.prototype.jump = function() {
-        this.sprite.body.moveUp(450);
+        this.sprite.body.moveUp(400);
     };
 
     // Allow the player to jump if they are touching the ground.
