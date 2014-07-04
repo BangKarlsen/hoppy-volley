@@ -1,6 +1,6 @@
 define([
-    'phaser', 'ball', 'net', 'player'
-], function(Phaser, Ball, Net, Player) {
+    'phaser', 'ball', 'court', 'player'
+], function(Phaser, Ball, Court, Player) {
     'use strict';
 
     function Game() {
@@ -16,6 +16,12 @@ define([
             update: this.update,
             render: this.render
         });
+
+        this.game.settings = {
+            debug: false,
+            jumpForce: 450,
+            moveForce: 200
+        };
     };
 
     Game.prototype.preload = function() {
@@ -26,6 +32,7 @@ define([
         this.game.load.image('dude', 'assets/robo2.png');
         this.game.load.image('ball', 'assets/pangball.png');
         this.game.load.image('net', 'assets/bg.png');
+        this.game.load.image('floor', 'assets/bg.png');
 
         //  Load player shape data exported from PhysicsEditor
         this.game.load.physics('physicsData', 'assets/robo2.json');
@@ -40,7 +47,7 @@ define([
         this.game.physics.p2.gravity.y = 800;
 
         this.ball = new Ball(this.game);
-        this.net = new Net(this.game);
+        this.court = new Court(this.game);
 
         this.player1 = new Player({
             name: 'Bobby',
@@ -64,43 +71,50 @@ define([
             }
         }, this.ball, this.game);
 
-        (function initialiseMaterials(player1, player2, ball, game) {
-            var playerMaterial = game.physics.p2.createMaterial('playerMaterial');
-            var ballMaterial = game.physics.p2.createMaterial('ballMaterial', ball.sprite.body);
-            var worldMaterial = game.physics.p2.createMaterial('worldMaterial');
-
-            player1.sprite.body.setMaterial(playerMaterial);
-            player2.sprite.body.setMaterial(playerMaterial);
-
-            //  4 trues = the 4 faces of the world in left, right, top, bottom order
-            game.physics.p2.setWorldMaterial(worldMaterial, true, true, true, true);
-
-            var ballWorldContactMaterial = game.physics.p2.createContactMaterial(ballMaterial, worldMaterial);
-            ballWorldContactMaterial.friction = 0.1; // Friction to use in the contact of these two materials.
-            ballWorldContactMaterial.restitution = 0.9; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
-
-            var playerWorldContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
-            playerWorldContactMaterial.friction = 0.5; // Friction to use in the contact of these two materials.
-            playerWorldContactMaterial.restitution = 0.3; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
-
-            var playerBallContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
-            playerBallContactMaterial.friction = 0.9; // Friction to use in the contact of these two materials.
-            playerBallContactMaterial.restitution = 1.5; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
-        }(this.player1, this.player2, this.ball, this.game));
+        initialiseMaterials(this.player1, this.player2, this.ball, this.court, this.game);
     };
 
+    function initialiseMaterials(player1, player2, ball, court, game) {
+        var playerMaterial = game.physics.p2.createMaterial('playerMaterial');
+        var ballMaterial = game.physics.p2.createMaterial('ballMaterial', ball.sprite.body);
+        var worldMaterial = game.physics.p2.createMaterial('worldMaterial');
+        var courtMaterial = game.physics.p2.createMaterial('courtMaterial', court.floorSprite.body);
+
+        player1.sprite.body.setMaterial(playerMaterial);
+        player2.sprite.body.setMaterial(playerMaterial);
+
+        //  4 trues = the 4 faces of the world in left, right, top, bottom order
+        game.physics.p2.setWorldMaterial(worldMaterial, true, true, true, true);
+
+        var ballWorldContactMaterial = game.physics.p2.createContactMaterial(ballMaterial, worldMaterial);
+        ballWorldContactMaterial.friction = 0.1; // Friction to use in the contact of these two materials.
+        ballWorldContactMaterial.restitution = 0.9; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+
+        var playerWorldContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
+        playerWorldContactMaterial.friction = 0.5; // Friction to use in the contact of these two materials.
+        playerWorldContactMaterial.restitution = 0.3; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+
+        var playerBallContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
+        playerBallContactMaterial.friction = 0.9; // Friction to use in the contact of these two materials.
+        playerBallContactMaterial.restitution = 1.3; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+
+        var playerCourtContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, courtMaterial);
+        playerCourtContactMaterial.friction = 0.5;
+        playerCourtContactMaterial.restitution = 0.3;
+    }
+
     Game.prototype.update = function() {
-        function handleInput(commandList, player, game) {
+        function handleInput(commands, player, game) {
             if (game.input.keyboard.isDown(player.input.left)) {
-                commandList.push(moveLeftCommand(player));
+                commands.push(moveLeftCommand(player));
             }
             if (game.input.keyboard.isDown(player.input.right)) {
-                commandList.push(moveRightCommand(player));
+                commands.push(moveRightCommand(player));
             }
             if (game.input.keyboard.isDown(player.input.jump) && player.canJump()) {
-                commandList.push(jumpCommand(player));
+                commands.push(jumpCommand(player));
             }
-            return commandList;
+            return commands;
 
             function jumpCommand(player) {
                 return function() {
@@ -120,6 +134,8 @@ define([
                 };
             }
         }
+
+        this.ball.get
 
         var commands = [];
 

@@ -3,27 +3,40 @@ define(function() {
         this.name = config.name;
         this.input = config.input;
         this.game = game;
+        this.numTouches = 0;
 
         var startPosX = 60;
         if (config.side === 'right') {
             startPosX = game.world.width - startPosX;
         }
-        this.sprite = game.add.sprite(startPosX, game.world.height - 35, 'dude');
+        this.sprite = game.add.sprite(startPosX, game.world.height - 65, 'dude');
         this.sprite.anchor.setTo(0.5, 0.5);
-        game.physics.p2.enable(this.sprite, false);
+        game.physics.p2.enable(this.sprite, game.settings.debug);
 
         this.sprite.body.clearShapes();
         this.sprite.body.loadPolygon('physicsData', 'robo2');
         this.sprite.body.fixedRotation = true;
 
+        // Make player look in the right direction.
+        // Note this does not flip the physics data, so the player sprite should be symmetric.
         if (config.side === 'right') {
             this.sprite.scale.x = -1;
         }
-        // sprite.scale.setTo(0.4, 0.4);
 
+        var lasttouchTime = Date.now();
         this.sprite.body.onBeginContact.add(function(body, shapeA, shapeB, equation) {
-            if (body && body.sprite.key === 'ball' && !ball.isActive) {
-                ball.activate();
+            if (body && body.sprite.key === 'ball') {
+                if (!ball.isActive) {
+                    ball.activate();
+                    this.numTouches++;
+                } else {
+                    var currentTime = Date.now();
+                    // Insert 200 ms threshold to make rapid collisions count just once
+                    if (lasttouchTime < currentTime - 200) {
+                        this.numTouches++;
+                        lasttouchTime = currentTime;
+                    }
+                }
             }
         }, this);
     };
@@ -33,18 +46,18 @@ define(function() {
     Player.prototype.score = 0;
 
     Player.prototype.moveLeft = function() {
-        this.sprite.body.moveLeft(170);
+        this.sprite.body.moveLeft(this.game.settings.moveForce);
     };
 
     Player.prototype.moveRight = function() {
-        this.sprite.body.moveRight(170);
+        this.sprite.body.moveRight(this.game.settings.moveForce);
     };
 
     Player.prototype.jump = function() {
-        this.sprite.body.moveUp(400);
+        this.sprite.body.moveUp(this.game.settings.jumpForce);
     };
 
-    // Allow the player to jump if they are touching the ground.
+    // Only allow the player to jump if he is touching the ground.
     // Code is from 'tilemap gravity' example, no idea why it works...
     Player.prototype.canJump = function() {
         var yAxis = p2.vec2.fromValues(0, 1);
