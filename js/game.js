@@ -71,10 +71,11 @@ define([
             }
         }, this.ball, this.game);
 
-        initialiseMaterials(this.player1, this.player2, this.ball, this.court, this.game);
+        initMaterials(this.player1, this.player2, this.ball, this.court, this.game);
+        initScoreText(this);
     };
 
-    function initialiseMaterials(player1, player2, ball, court, game) {
+    function initMaterials(player1, player2, ball, court, game) {
         var playerMaterial = game.physics.p2.createMaterial('playerMaterial');
         var ballMaterial = game.physics.p2.createMaterial('ballMaterial', ball.sprite.body);
         var worldMaterial = game.physics.p2.createMaterial('worldMaterial');
@@ -101,41 +102,24 @@ define([
         var playerCourtContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, courtMaterial);
         playerCourtContactMaterial.friction = 0.5;
         playerCourtContactMaterial.restitution = 0.3;
-    }
+    };
+
+    function initScoreText(that) {
+        var style = {
+            font: '20px Arial',
+            fill: '#ffffff',
+            align: "left"
+        };
+        that.textNamePlayer1 = that.game.add.text(70, 32, that.player1.name, style);
+        that.textScorePlayer1 = that.game.add.text(45, 32, that.player1.score, style);
+        style.align = 'right';
+        that.textNamePlayer2 = that.game.add.text(that.game.width - 110, 32, that.player2.name, style);
+        that.textScorePlayer2 = that.game.add.text(that.game.width - 45, 32, that.player2.score, style);
+    };
 
     Game.prototype.update = function() {
-        function handleInput(commands, player, game) {
-            if (game.input.keyboard.isDown(player.input.left)) {
-                commands.push(moveLeftCommand(player));
-            }
-            if (game.input.keyboard.isDown(player.input.right)) {
-                commands.push(moveRightCommand(player));
-            }
-            if (game.input.keyboard.isDown(player.input.jump) && player.canJump()) {
-                commands.push(jumpCommand(player));
-            }
-            return commands;
-
-            function jumpCommand(player) {
-                return function() {
-                    player.jump();
-                };
-            }
-
-            function moveRightCommand(player) {
-                return function() {
-                    player.moveRight();
-                };
-            }
-
-            function moveLeftCommand(player) {
-                return function() {
-                    player.moveLeft();
-                };
-            }
-        }
-
-        this.ball.get
+        this.textScorePlayer1.text = '' + this.player1.numTouches;
+        this.textScorePlayer2.text = '' + this.player2.numTouches;
 
         var commands = [];
 
@@ -149,10 +133,45 @@ define([
         });
     }
 
+    function handleInput(commands, player, game) {
+        if (game.input.keyboard.isDown(player.input.left)) {
+            commands.push(moveLeftCommand(player));
+        }
+        if (game.input.keyboard.isDown(player.input.right)) {
+            commands.push(moveRightCommand(player));
+        }
+        if (game.input.keyboard.isDown(player.input.jump) && player.canJump()) {
+            commands.push(jumpCommand(player));
+        }
+        return commands;
+
+        function jumpCommand(player) {
+            return function() {
+                player.jump();
+            };
+        }
+
+        function moveRightCommand(player) {
+            return function() {
+                player.moveRight();
+            };
+        }
+
+        function moveLeftCommand(player) {
+            return function() {
+                player.moveLeft();
+            };
+        }
+    }
+
 
     Game.prototype.render = function() {
-        this.game.debug.text(this.player1.name + ' ' + this.player1.score, 64, 32);
+        /*    this.game.debug.text(this.player1.name + ' ' + this.player1.score, 64, 32);
+        this.game.debug.text('Touches ' + this.player1.numTouches, 64, 64);
         this.game.debug.text(this.player2.name + ' ' + this.player2.score, this.game.width - 160, 32);
+        this.game.debug.text('Touches ' + this.player2.numTouches, this.game.width - 160, 64);
+    */
+
     }
 
     return Game;
