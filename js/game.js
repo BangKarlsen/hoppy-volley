@@ -73,6 +73,8 @@ define([
 
         initMaterials(this.player1, this.player2, this.ball, this.court, this.game);
         initScoreText(this);
+
+        this.ball.serve(this.player2);
     };
 
     function initMaterials(player1, player2, ball, court, game) {
@@ -104,17 +106,21 @@ define([
         playerCourtContactMaterial.restitution = 0.3;
     };
 
-    function initScoreText(that) {
+    function initScoreText(parent) {
         var style = {
             font: '20px Arial',
             fill: '#ffffff',
             align: "left"
         };
-        that.textNamePlayer1 = that.game.add.text(70, 32, that.player1.name, style);
-        that.textScorePlayer1 = that.game.add.text(45, 32, that.player1.score, style);
+
+        //parent.textName = parent.game.add.text(parent.game.width - 110, 32, parent.player2.name, style);
+        //parent.textScorePlayer2 = parent.game.add.text(parent.game.width - 45, 32, parent.player2.score, style);
+
+        parent.textNamePlayer1 = parent.game.add.text(75, 32, parent.player1.name, style);
+        parent.textScorePlayer1 = parent.game.add.text(45, 32, parent.player1.score, style);
         style.align = 'right';
-        that.textNamePlayer2 = that.game.add.text(that.game.width - 110, 32, that.player2.name, style);
-        that.textScorePlayer2 = that.game.add.text(that.game.width - 45, 32, that.player2.score, style);
+        parent.textNamePlayer2 = parent.game.add.text(parent.game.width - 110, 32, parent.player2.name, style);
+        parent.textScorePlayer2 = parent.game.add.text(parent.game.width - 45, 32, parent.player2.score, style);
     };
 
     Game.prototype.update = function() {

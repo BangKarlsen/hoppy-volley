@@ -2,11 +2,12 @@ define(function() {
     function Player(config, ball, game) {
         this.name = config.name;
         this.input = config.input;
+        this.side = config.side;
         this.game = game;
         this.numTouches = 0;
 
         var startPosX = 60;
-        if (config.side === 'right') {
+        if (this.side === 'right') {
             startPosX = game.world.width - startPosX;
         }
         this.sprite = game.add.sprite(startPosX, game.world.height - 65, 'dude');
