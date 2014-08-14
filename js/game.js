@@ -10,10 +10,10 @@ define([
     Game.prototype.constructor = Game;
 
     Game.prototype.start = function() {
-        this.game = new Phaser.Game(800, 400, Phaser.AUTO, 'volley', {
+        this.game = new Phaser.Game(800, 400, Phaser.CANVAS, 'volley', {
             preload: this.preload,
             create: this.create,
-            update: this.update,
+            update: this.update
             render: this.render
         });
 
@@ -29,13 +29,13 @@ define([
         // but that seems to break something..
         this.game.load.image('sky', 'assets/sky.png');
         this.game.load.image('ground', 'assets/platform.png');
-        this.game.load.image('dude', 'assets/robo2.png');
-        this.game.load.image('ball', 'assets/pangball.png');
+        this.game.load.image('dude', 'assets/hoppy.png');
+        this.game.load.image('ball', 'assets/ball.png');
         this.game.load.image('net', 'assets/bg.png');
         this.game.load.image('floor', 'assets/bg.png');
 
         //  Load player shape data exported from PhysicsEditor
-        this.game.load.physics('physicsData', 'assets/robo2.json');
+        this.game.load.physics('physicsData', 'assets/hoppy_physics.json');
     };
 
     Game.prototype.create = function() {
@@ -71,10 +71,12 @@ define([
             }
         }, this.ball, this.game);
 
-        initMaterials(this.player1, this.player2, this.ball, this.court, this.game);
-        initScoreText(this);
-
+        this.currentServer = this.player2.name
         this.ball.serve(this.player2);
+
+
+        initMaterials(this.player1, this.player2, this.ball, this.court, this.game);
+        //initScoreText(this);
     };
 
     function initMaterials(player1, player2, ball, court, game) {
@@ -124,14 +126,30 @@ define([
     };
 
     Game.prototype.update = function() {
-        this.textScorePlayer1.text = '' + this.player1.numTouches;
-        this.textScorePlayer2.text = '' + this.player2.numTouches;
+        if (this.court.floorTouches >= 3) {
+            if (this.ball.lastTouchedBy === this.player1.name) {
+                this.ball.serve(this.player2);
+            } else {
+                this.ball.serve(this.player1);
+            }
+            this.court.floorTouches = 0;
+        }
 
+        //updateScoreText(this);
+        updateCommands(this);
+    }
+
+    function updateScoreText(parent) {
+        parent.textScorePlayer1.text = '' + parent.player1.score;
+        parent.textScorePlayer2.text = '' + parent.player2.score;
+    }
+
+    function updateCommands(parent) {
         var commands = [];
 
         // get commands from input
-        commands = handleInput(commands, this.player1, this.game);
-        commands = handleInput(commands, this.player2, this.game);
+        commands = handleInput(commands, parent.player1, parent.game);
+        commands = handleInput(commands, parent.player2, parent.game);
 
         // execute commands
         commands.forEach(function(command) {

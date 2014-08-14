@@ -15,7 +15,7 @@ define(function() {
         game.physics.p2.enable(this.sprite, game.settings.debug);
 
         this.sprite.body.clearShapes();
-        this.sprite.body.loadPolygon('physicsData', 'robo2');
+        this.sprite.body.loadPolygon('physicsData', 'hoppy');
         this.sprite.body.fixedRotation = true;
 
         // Make player look in the right direction.
@@ -27,6 +27,7 @@ define(function() {
         var lasttouchTime = Date.now();
         this.sprite.body.onBeginContact.add(function(body, shapeA, shapeB, equation) {
             if (body && body.sprite.key === 'ball') {
+                ball.lastTouchedBy = this.name;
                 if (!ball.isActive) {
                     ball.activate();
                     this.numTouches++;

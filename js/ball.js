@@ -1,11 +1,11 @@
 define(function() {
-    function Ball(game) {
+    function Ball(game, spriteName) {
         console.log('Creating Ball');
         // Hack to get e reference to game in serve()
         this.game = game;
 
         // Init ball to left player
-        this.sprite = game.add.sprite(game.world.width / 2, game.world.height - (game.world.height / 4), 'ball');
+        this.sprite = game.add.sprite(game.world.width / 2, game.world.height - (game.world.height / 3), 'ball');
         this.sprite.scale.setTo(1.2, 1.2);
 
         // Init physics
@@ -37,6 +37,7 @@ define(function() {
             this.sprite.body.x = this.game.world.width - (this.game.world.width / 4);
             this.deactivate();
         }
+        this.sprite.body.y = this.game.world.height - (this.game.world.height / 3);
     };
 
     return Ball;

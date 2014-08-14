@@ -1,0 +1,22 @@
+	{ 
+		
+		"hoppy": [
+			
+				{
+					"density": 2, "friction": 0, "bounce": 0, 
+					"filter": { "categoryBits": 1, "maskBits": 65535 },
+					"shape": [   11, 8  ,  26, 1  ,  38, 1  ,  53.25, 8  ,  59, 17  ,  62, 32  ,  1.25, 31.5  ,  3, 18  ]
+				}   ,
+				{
+					"density": 2, "friction": 0, "bounce": 0, 
+					"filter": { "categoryBits": 1, "maskBits": 65535 },
+					"shape": [   55.5, 66  ,  7, 66  ,  7, 32  ,  56, 32  ]
+				}   ,
+				{
+					"density": 2, "friction": 0, "bounce": 0, 
+					"filter": { "categoryBits": 1, "maskBits": 65535 },
+					"shape": [   0, 66  ,  62, 66  ,  58, 82  ,  41, 92  ,  24, 92  ,  6, 83  ]
+				}  
+		]
+		
+	}
