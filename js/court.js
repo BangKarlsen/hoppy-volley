@@ -1,8 +1,10 @@
+'use strict';
+
 define(function() {
     function Court(game) {
         createNet(this, game);
         createFloor(this, game);
-    };
+    }
 
     function createNet(parent, game) {
         console.log('Creating Net');
@@ -29,24 +31,9 @@ define(function() {
         // mass is not set or if mass = 1 ... why?
         parent.floorSprite.body.mass = 0.1;
         parent.floorSprite.body.fixedRotation = true;
-
-        // Set up floor so we register how many times the ball has hit the floor
-        var lasttouchTime = Date.now();
-        parent.floorSprite.body.onBeginContact.add(function(body, shapeA, shapeB, equation) {
-            if (body && body.sprite.key === 'ball') {
-                var currentTime = Date.now();
-                // Insert 200 ms threshold to make rapid collisions count just once
-                if (lasttouchTime < currentTime - 200) {
-                    parent.floorTouches++;
-                    lasttouchTime = currentTime;
-                }
-            }
-        }, this);
     }
 
     Court.prototype.constructor = Court;
-
-    Court.prototype.floorTouches = 0; // lav function til at tælle antal gange bolden har ramt jorden
 
     return Court;
 });

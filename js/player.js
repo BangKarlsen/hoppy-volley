@@ -1,3 +1,5 @@
+'use strict';
+
 define(function() {
     function Player(config, ball, game) {
         this.name = config.name;
@@ -19,16 +21,18 @@ define(function() {
         this.sprite.body.fixedRotation = true;
 
         // Make player look in the right direction.
-        // Note this does not flip the physics data, so the player sprite should be symmetric.
+        // This does not flip the physics data, but the player sprite is symmetric for now.
         if (config.side === 'right') {
             this.sprite.scale.x = -1;
         }
 
+        // Register when player touches the ball
         var lasttouchTime = Date.now();
-        this.sprite.body.onBeginContact.add(function(body, shapeA, shapeB, equation) {
+        this.sprite.body.onBeginContact.add(function(body) {
             if (body && body.sprite.key === 'ball') {
                 ball.lastTouchedBy = this.name;
-                if (!ball.isActive) {
+                ball.touchedFloor = 0;
+                if (!ball.isActive) {   // player serves the ball
                     ball.activate();
                     this.numTouches++;
                 } else {
@@ -41,7 +45,7 @@ define(function() {
                 }
             }
         }, this);
-    };
+    }
 
     Player.prototype.constructor = Player;
 

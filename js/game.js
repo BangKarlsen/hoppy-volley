@@ -1,8 +1,8 @@
+'use strict';
+
 define([
     'phaser', 'ball', 'court', 'player'
 ], function(Phaser, Ball, Court, Player) {
-    'use strict';
-
     function Game() {
         console.log('Making the Game');
     }
@@ -13,14 +13,16 @@ define([
         this.game = new Phaser.Game(800, 400, Phaser.CANVAS, 'volley', {
             preload: this.preload,
             create: this.create,
-            update: this.update
+            update: this.update,
             render: this.render
         });
 
         this.game.settings = {
             debug: false,
             jumpForce: 450,
-            moveForce: 200
+            moveForce: 200,
+            ballSprite: 'ball',
+            ballSpriteFile: 'assets/ball.png'
         };
     };
 
@@ -34,7 +36,7 @@ define([
         this.game.load.image('net', 'assets/bg.png');
         this.game.load.image('floor', 'assets/bg.png');
 
-        //  Load player shape data exported from PhysicsEditor
+        // Load player shape data exported from PhysicsEditor. Also check player.js loadPolygon()
         this.game.load.physics('physicsData', 'assets/hoppy_physics.json');
     };
 
@@ -71,12 +73,11 @@ define([
             }
         }, this.ball, this.game);
 
-        this.currentServer = this.player2.name
+        this.currentServer = this.player2.name;
         this.ball.serve(this.player2);
 
-
         initMaterials(this.player1, this.player2, this.ball, this.court, this.game);
-        //initScoreText(this);
+        initScoreText(this);
     };
 
     function initMaterials(player1, player2, ball, court, game) {
@@ -96,48 +97,45 @@ define([
         ballWorldContactMaterial.restitution = 0.9; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 
         var playerWorldContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
-        playerWorldContactMaterial.friction = 0.5; // Friction to use in the contact of these two materials.
-        playerWorldContactMaterial.restitution = 0.3; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+        playerWorldContactMaterial.friction = 0.5; 
+        playerWorldContactMaterial.restitution = 0.3; 
 
         var playerBallContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
-        playerBallContactMaterial.friction = 0.9; // Friction to use in the contact of these two materials.
-        playerBallContactMaterial.restitution = 1.3; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+        playerBallContactMaterial.friction = 0.9;
+        playerBallContactMaterial.restitution = 1.3; 
 
         var playerCourtContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, courtMaterial);
         playerCourtContactMaterial.friction = 0.5;
         playerCourtContactMaterial.restitution = 0.3;
-    };
+    }
 
     function initScoreText(parent) {
         var style = {
             font: '20px Arial',
-            fill: '#ffffff',
-            align: "left"
+            fill: '#ffffff'
         };
 
-        //parent.textName = parent.game.add.text(parent.game.width - 110, 32, parent.player2.name, style);
-        //parent.textScorePlayer2 = parent.game.add.text(parent.game.width - 45, 32, parent.player2.score, style);
-
+        style.align = 'left';
         parent.textNamePlayer1 = parent.game.add.text(75, 32, parent.player1.name, style);
         parent.textScorePlayer1 = parent.game.add.text(45, 32, parent.player1.score, style);
+        
         style.align = 'right';
         parent.textNamePlayer2 = parent.game.add.text(parent.game.width - 110, 32, parent.player2.name, style);
         parent.textScorePlayer2 = parent.game.add.text(parent.game.width - 45, 32, parent.player2.score, style);
-    };
+    }
 
     Game.prototype.update = function() {
-        if (this.court.floorTouches >= 3) {
+        if (this.ball.touchedFloor > 3) {
             if (this.ball.lastTouchedBy === this.player1.name) {
                 this.ball.serve(this.player2);
             } else {
                 this.ball.serve(this.player1);
             }
-            this.court.floorTouches = 0;
         }
 
-        //updateScoreText(this);
+        updateScoreText(this);
         updateCommands(this);
-    }
+    };
 
     function updateScoreText(parent) {
         parent.textScorePlayer1.text = '' + parent.player1.score;
@@ -188,15 +186,13 @@ define([
         }
     }
 
-
     Game.prototype.render = function() {
-        /*    this.game.debug.text(this.player1.name + ' ' + this.player1.score, 64, 32);
+        this.game.debug.text(this.player1.name + ' ' + this.player1.score, 64, 32);
         this.game.debug.text('Touches ' + this.player1.numTouches, 64, 64);
         this.game.debug.text(this.player2.name + ' ' + this.player2.score, this.game.width - 160, 32);
         this.game.debug.text('Touches ' + this.player2.numTouches, this.game.width - 160, 64);
-    */
-
-    }
+        this.game.debug.text('ball.touchedFloor = ' + this.ball.touchedFloor, this.game.width / 2, 14);
+    };
 
     return Game;
 });
