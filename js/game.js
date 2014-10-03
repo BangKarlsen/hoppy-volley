@@ -2,14 +2,14 @@
 
 define([
     'phaser', 'ball', 'court', 'player'
-], function(Phaser, Ball, Court, Player) {
+], function (Phaser, Ball, Court, Player) {
     function Game() {
         console.log('Making the Game');
     }
 
     Game.prototype.constructor = Game;
 
-    Game.prototype.start = function() {
+    Game.prototype.start = function () {
         this.game = new Phaser.Game(800, 400, Phaser.CANVAS, 'volley', {
             preload: this.preload,
             create: this.create,
@@ -26,13 +26,13 @@ define([
         };
     };
 
-    Game.prototype.preload = function() {
+    Game.prototype.preload = function () {
         // It would be better to load these in the modules where they are used (player/ball/net)
         // but that seems to break something..
         this.game.load.image('sky', 'assets/sky.png');
         this.game.load.image('ground', 'assets/platform.png');
         this.game.load.image('dude', 'assets/hoppy.png');
-        this.game.load.image('ball', 'assets/ball.png');
+        this.game.load.image(this.game.settings.ballSprite, 'assets/ball.png');
         this.game.load.image('net', 'assets/bg.png');
         this.game.load.image('floor', 'assets/bg.png');
 
@@ -40,7 +40,7 @@ define([
         this.game.load.physics('physicsData', 'assets/hoppy_physics.json');
     };
 
-    Game.prototype.create = function() {
+    Game.prototype.create = function () {
         this.game.add.sprite(0, 0, 'sky');
 
         // Init physics
@@ -97,12 +97,12 @@ define([
         ballWorldContactMaterial.restitution = 0.9; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 
         var playerWorldContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
-        playerWorldContactMaterial.friction = 0.5; 
-        playerWorldContactMaterial.restitution = 0.3; 
+        playerWorldContactMaterial.friction = 0.5;
+        playerWorldContactMaterial.restitution = 0.3;
 
         var playerBallContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
         playerBallContactMaterial.friction = 0.9;
-        playerBallContactMaterial.restitution = 1.3; 
+        playerBallContactMaterial.restitution = 1.3;
 
         var playerCourtContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, courtMaterial);
         playerCourtContactMaterial.friction = 0.5;
@@ -118,13 +118,13 @@ define([
         style.align = 'left';
         parent.textNamePlayer1 = parent.game.add.text(75, 32, parent.player1.name, style);
         parent.textScorePlayer1 = parent.game.add.text(45, 32, parent.player1.score, style);
-        
+
         style.align = 'right';
         parent.textNamePlayer2 = parent.game.add.text(parent.game.width - 110, 32, parent.player2.name, style);
         parent.textScorePlayer2 = parent.game.add.text(parent.game.width - 45, 32, parent.player2.score, style);
     }
 
-    Game.prototype.update = function() {
+    Game.prototype.update = function () {
         if (this.ball.touchedFloor > 3) {
             if (this.ball.lastTouchedBy === this.player1.name) {
                 this.ball.serve(this.player2);
@@ -150,7 +150,7 @@ define([
         commands = handleInput(commands, parent.player2, parent.game);
 
         // execute commands
-        commands.forEach(function(command) {
+        commands.forEach(function (command) {
             command();
         });
     }
@@ -168,30 +168,31 @@ define([
         return commands;
 
         function jumpCommand(player) {
-            return function() {
+            return function () {
                 player.jump();
             };
         }
 
         function moveRightCommand(player) {
-            return function() {
+            return function () {
                 player.moveRight();
             };
         }
 
         function moveLeftCommand(player) {
-            return function() {
+            return function () {
                 player.moveLeft();
             };
         }
     }
 
-    Game.prototype.render = function() {
-        this.game.debug.text(this.player1.name + ' ' + this.player1.score, 64, 32);
+    Game.prototype.render = function () {
+        /*     this.game.debug.text(this.player1.name + ' ' + this.player1.score, 64, 32);
         this.game.debug.text('Touches ' + this.player1.numTouches, 64, 64);
         this.game.debug.text(this.player2.name + ' ' + this.player2.score, this.game.width - 160, 32);
         this.game.debug.text('Touches ' + this.player2.numTouches, this.game.width - 160, 64);
         this.game.debug.text('ball.touchedFloor = ' + this.ball.touchedFloor, this.game.width / 2, 14);
+    */
     };
 
     return Game;
