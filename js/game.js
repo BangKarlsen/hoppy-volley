@@ -133,7 +133,7 @@ define([
             }
         }
 
-        updateScoreText(this);
+        updateScoreText(this);  // todo: dont update scores pr. frame, only when player scores
         updateCommands(this);
     };
 
@@ -157,33 +157,21 @@ define([
 
     function handleInput(commands, player, game) {
         if (game.input.keyboard.isDown(player.input.left)) {
-            commands.push(moveLeftCommand(player));
+            commands.push(function moveLeftCommand() {
+                player.moveLeft();
+            });
         }
         if (game.input.keyboard.isDown(player.input.right)) {
-            commands.push(moveRightCommand(player));
+            commands.push(function moveRightCommand() {
+                player.moveRight();
+            });
         }
         if (game.input.keyboard.isDown(player.input.jump) && player.canJump()) {
-            commands.push(jumpCommand(player));
+            commands.push(function jumpCommand() {
+                player.jump();
+            });
         }
         return commands;
-
-        function jumpCommand(player) {
-            return function () {
-                player.jump();
-            };
-        }
-
-        function moveRightCommand(player) {
-            return function () {
-                player.moveRight();
-            };
-        }
-
-        function moveLeftCommand(player) {
-            return function () {
-                player.moveLeft();
-            };
-        }
     }
 
     Game.prototype.render = function () {
