@@ -127,21 +127,26 @@ define([
     }
 
     Game.prototype.update = function () {
-        if (this.ball.touchedRightFloor > 2 && this.ball.lastServer === this.player1.id) {
-            updateScore(this, this.player1);
-            this.ball.serve(this.player1);            
+        if (this.ball.touchedRightFloor > 2) {
+            if (this.ball.lastServer === this.player1.id) {
+                updateScore(this, this.player1);
+                this.ball.serve(this.player1);                            
+            } else {
+                this.ball.serve(this.player1);                            
+            }
         }
-        if (this.ball.touchedLeftFloor > 2 && this.ball.lastServer === this.player2.id) {
-            updateScore(this, this.player2);
-            this.ball.serve(this.player2);            
-        }
-        if (this.ball.touchedRightFloor > 2 && this.ball.lastServer === this.player2.id) {
-            this.ball.serve(this.player1);            
-        }
-        if (this.ball.touchedLeftFloor > 2 && this.ball.lastServer === this.player1.id) {
-            this.ball.serve(this.player2);            
+
+        if (this.ball.touchedLeftFloor > 2) {
+            if (this.ball.lastServer === this.player2.id) {
+                updateScore(this, this.player2);
+                this.ball.serve(this.player2);                            
+            } else {
+                this.ball.serve(this.player2);                            
+            }
         }
         
+        // check for max number of touches here
+
         updateCommands(this);
     };
 
