@@ -52,6 +52,7 @@ define([
         this.court = new Court(this.game);
 
         this.player1 = new Player({
+            id: 1,
             name: 'Bobby',
             side: 'left',
             input: {
@@ -63,6 +64,7 @@ define([
         }, this.ball, this.game);
 
         this.player2 = new Player({
+            id: 2,
             name: 'Tobby',
             side: 'right',
             input: {
@@ -73,8 +75,8 @@ define([
             }
         }, this.ball, this.game);
 
-        this.currentServer = this.player2.name;
-        this.ball.serve(this.player2);
+        var player = Math.floor(Math.random()*2+1) === 1 ? this.player1 : this.player2;
+        this.ball.serve(player);
 
         initMaterials(this.player1, this.player2, this.ball, this.court, this.game);
         initScoreText(this);
@@ -115,31 +117,42 @@ define([
             fill: '#ffffff'
         };
 
-        style.align = 'left';
+        style.align = parent.player1.side;
         parent.textNamePlayer1 = parent.game.add.text(75, 32, parent.player1.name, style);
-        parent.textScorePlayer1 = parent.game.add.text(45, 32, parent.player1.score, style);
+        parent.textScorePlayer1 = parent.game.add.text(45, 32, '' + parent.player1.score, style);
 
-        style.align = 'right';
+        style.align = parent.player2.side;
         parent.textNamePlayer2 = parent.game.add.text(parent.game.width - 110, 32, parent.player2.name, style);
-        parent.textScorePlayer2 = parent.game.add.text(parent.game.width - 45, 32, parent.player2.score, style);
+        parent.textScorePlayer2 = parent.game.add.text(parent.game.width - 45, 32, '' + parent.player2.score, style);
     }
 
     Game.prototype.update = function () {
-        if (this.ball.touchedFloor > 3) {
-            if (this.ball.lastTouchedBy === this.player1.name) {
-                this.ball.serve(this.player2);
-            } else {
-                this.ball.serve(this.player1);
-            }
+        if (this.ball.touchedRightFloor > 2 && this.ball.lastServer === this.player1.id) {
+            updateScore(this, this.player1);
+            this.ball.serve(this.player1);            
         }
-
-        updateScoreText(this);  // todo: dont update scores pr. frame, only when player scores
+        if (this.ball.touchedLeftFloor > 2 && this.ball.lastServer === this.player2.id) {
+            updateScore(this, this.player2);
+            this.ball.serve(this.player2);            
+        }
+        if (this.ball.touchedRightFloor > 2 && this.ball.lastServer === this.player2.id) {
+            this.ball.serve(this.player1);            
+        }
+        if (this.ball.touchedLeftFloor > 2 && this.ball.lastServer === this.player1.id) {
+            this.ball.serve(this.player2);            
+        }
+        
         updateCommands(this);
     };
 
-    function updateScoreText(parent) {
-        parent.textScorePlayer1.text = '' + parent.player1.score;
-        parent.textScorePlayer2.text = '' + parent.player2.score;
+    function updateScore(parent, player) {
+        player.score++;
+        if (player.id === 1) {
+            parent.textScorePlayer1.text = '' + player.score;
+        } else {
+            parent.textScorePlayer2.text = '' + player.score;
+        }
+        console.log(player.name + ': ' + player.score);
     }
 
     function updateCommands(parent) {

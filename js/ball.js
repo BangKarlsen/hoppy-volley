@@ -15,14 +15,21 @@ define(function() {
         this.sprite.body.mass = 0.5;
         this.deactivate();
 
-        // Set up floor so we register how many times the ball has hit the floor
+        // Register how many times the ball has hit the floor
         var lasttouchTime = Date.now();
         this.sprite.body.onBeginContact.add(function(body) {
             if (body && body.sprite.key === 'floor') {
                 var currentTime = Date.now();
                 // Insert 200 ms threshold to make rapid collisions count as one
                 if (lasttouchTime < currentTime - 200) {
-                    this.touchedFloor++;
+                    var courtCenter = game.world.width / 2;
+                    if (this.sprite.body.x < courtCenter - 10) {
+                        this.touchedRightFloor = 0;
+                        this.touchedLeftFloor++;
+                    } else if (this.sprite.body.x > courtCenter + 10) {
+                        this.touchedLeftFloor = 0;
+                        this.touchedRightFloor++;
+                    }
                     lasttouchTime = currentTime;
                 }
             }
@@ -52,11 +59,14 @@ define(function() {
             this.deactivate();
         }
         this.sprite.body.y = this.game.world.height - (this.game.world.height / 3);
-        this.touchedFloor = 0;
-        this.lastServer = player.name;
+        this.touchedLeftFloor = 0;
+        this.touchedRightFloor = 0;
+        this.lastServer = player.id;
     };
 
-    Ball.prototype.touchedFloor = 0;
+    Ball.prototype.touchedLeftFloor = 0;
+
+    Ball.prototype.touchedRightFloor = 0;
 
     return Ball;
 });

@@ -2,11 +2,13 @@
 
 define(function() {
     function Player(config, ball, game) {
+        this.id = config.id;
         this.name = config.name;
         this.input = config.input;
         this.side = config.side;
         this.game = game;
         this.numTouches = 0;
+        this.score = 0;
 
         var startPosX = 60;
         if (this.side === 'right') {
@@ -30,8 +32,6 @@ define(function() {
         var lasttouchTime = Date.now();
         this.sprite.body.onBeginContact.add(function(body) {
             if (body && body.sprite.key === 'ball') {
-                ball.lastTouchedBy = this.name;
-                ball.touchedFloor = 0;
                 if (!ball.isActive) {   // player serves the ball
                     ball.activate();
                     this.numTouches++;
@@ -48,8 +48,6 @@ define(function() {
     }
 
     Player.prototype.constructor = Player;
-
-    Player.prototype.score = 0;
 
     Player.prototype.moveLeft = function() {
         this.sprite.body.moveLeft(this.game.settings.moveForce);
