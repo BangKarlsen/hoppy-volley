@@ -19,4 +19,7 @@
         var game = new Game();
         game.start();
     });
+
+
+//    $('body').append('<div id="slider"></div>');
 }());
