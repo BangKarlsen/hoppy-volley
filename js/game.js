@@ -21,8 +21,14 @@ define([
             debug: false,
             jumpForce: 450,
             moveForce: 200,
-            ballSprite: 'ball',
-            ballSpriteFile: 'assets/ball.png'
+            ballWorldFriction: 0.1, // Friction in the contact of these two materials.
+            ballWorldRestitution: 0.9, // how bouncy it is!
+            playerWorldFriction: 0.5,
+            playerWorldRestitution: 0.3,
+            playerBallFriction: 0.9,
+            playerBallRestitution: 1.3,
+            playerCourtFriction: 0.5,
+            playerCourtRestitution: 0.3
         };
     };
 
@@ -32,7 +38,7 @@ define([
         this.game.load.image('sky', 'assets/sky.png');
         this.game.load.image('ground', 'assets/platform.png');
         this.game.load.image('dude', 'assets/hoppy.png');
-        this.game.load.image(this.game.settings.ballSprite, 'assets/ball.png');
+        this.game.load.image('ball', 'assets/ball2.png');
         this.game.load.image('net', 'assets/bg.png');
         this.game.load.image('floor', 'assets/bg.png');
 
@@ -48,9 +54,9 @@ define([
         this.game.physics.p2.defaultRestitution = 0.9;
         this.game.physics.p2.gravity.y = 800;
 
+        // Init our actors
         this.ball = new Ball(this.game);
         this.court = new Court(this.game);
-
         this.player1 = new Player({
             id: 1,
             name: 'Bobby',
@@ -95,20 +101,20 @@ define([
         game.physics.p2.setWorldMaterial(worldMaterial, true, true, true, true);
 
         var ballWorldContactMaterial = game.physics.p2.createContactMaterial(ballMaterial, worldMaterial);
-        ballWorldContactMaterial.friction = 0.1; // Friction to use in the contact of these two materials.
-        ballWorldContactMaterial.restitution = 0.9; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+        ballWorldContactMaterial.friction = game.settings.ballWorldFriction; // Friction to use in the contact of these two materials.
+        ballWorldContactMaterial.restitution = game.settings.ballWorldRestitution; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 
         var playerWorldContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
-        playerWorldContactMaterial.friction = 0.5;
-        playerWorldContactMaterial.restitution = 0.3;
+        playerWorldContactMaterial.friction = game.settings.playerWorldFriction;
+        playerWorldContactMaterial.restitution = game.settings.playerWorldRestitution;
 
         var playerBallContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
-        playerBallContactMaterial.friction = 0.9;
-        playerBallContactMaterial.restitution = 1.3;
+        playerBallContactMaterial.friction = game.settings.playerBallFriction;
+        playerBallContactMaterial.restitution = game.settings.playerBallRestitution;
 
         var playerCourtContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, courtMaterial);
-        playerCourtContactMaterial.friction = 0.5;
-        playerCourtContactMaterial.restitution = 0.3;
+        playerCourtContactMaterial.friction = game.settings.playerCourtFriction;
+        playerCourtContactMaterial.restitution = game.settings.playerCourtRestitution;
     }
 
     function initScoreText(parent) {
@@ -129,7 +135,7 @@ define([
     Game.prototype.update = function () {
         if (this.ball.touchedRightFloor > 2) {
             if (this.ball.lastServer === this.player1.id) {
-                updateScore(this, this.player1);
+                updateScore(this.player1, this.textScorePlayer1);
                 this.ball.serve(this.player1);                            
             } else {
                 this.ball.serve(this.player1);                            
@@ -138,7 +144,7 @@ define([
 
         if (this.ball.touchedLeftFloor > 2) {
             if (this.ball.lastServer === this.player2.id) {
-                updateScore(this, this.player2);
+                updateScore(this.player2, this.textScorePlayer2);
                 this.ball.serve(this.player2);                            
             } else {
                 this.ball.serve(this.player2);                            
@@ -150,13 +156,9 @@ define([
         updateCommands(this);
     };
 
-    function updateScore(parent, player) {
+    function updateScore(player, textScore) {
         player.score++;
-        if (player.id === 1) {
-            parent.textScorePlayer1.text = '' + player.score;
-        } else {
-            parent.textScorePlayer2.text = '' + player.score;
-        }
+        textScore.text = '' + player.score;
         console.log(player.name + ': ' + player.score);
     }
 

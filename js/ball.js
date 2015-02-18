@@ -6,7 +6,7 @@ define(function() {
         this.game = game;
 
         // Init ball to left player
-        this.sprite = game.add.sprite(game.world.width / 2, game.world.height - (game.world.height / 3), game.settings.ballSprite);
+        this.sprite = game.add.sprite(game.world.width / 2, game.world.height - (game.world.height / 3), 'ball');
         this.sprite.scale.setTo(1.2, 1.2);
 
         // Init physics
