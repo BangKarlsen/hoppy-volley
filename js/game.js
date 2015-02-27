@@ -26,7 +26,7 @@ define([
         this.game.load.image('sky', 'assets/sky.png');
         this.game.load.image('ground', 'assets/platform.png');
         this.game.load.image('dude', 'assets/hoppy.png');
-        this.game.load.image('ball', 'assets/ball2.png');
+        this.game.load.image('ball', 'assets/ball.png');
         this.game.load.image('net', 'assets/bg.png');
         this.game.load.image('floor', 'assets/bg.png');
 
