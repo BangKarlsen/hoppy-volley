@@ -1,0 +1,31 @@
+
+body {
+    width: 800px;
+    margin: 0 auto;
+    padding-top: 30px;
+    background-color: #333;
+    font: 12px sans-serif;
+    color: white;
+}
+
+.labeledslider {
+    width: 800px;
+    height: 14px;
+    padding: 10px 0;
+}
+
+.slider-label {
+    float: left;
+    width: 150px;
+    /*margin: 0;*/
+}
+
+.slider-wrapper {
+    float: left;
+    width: 650px;
+}
+
+/* Overrule jq-ui theme */
+.ui-widget-content {
+    background: none;
+}
