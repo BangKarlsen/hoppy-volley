@@ -9,18 +9,13 @@ define(function() {
         this.game = game;
         this.numTouches = 0;
         this.score = 0;
-
-        var startPosX = 60;
-        if (this.side === 'right') {
-            startPosX = game.world.width - startPosX;
-        }
-        this.sprite = game.add.sprite(startPosX, game.world.height - 65, 'dude');
+        this.sprite = game.add.sprite(this.getStartPositionX(), this.getStartPositionY(), 'dude');
         this.sprite.anchor.setTo(0.5, 0.5);
         game.physics.p2.enable(this.sprite, game.settings.debug);
 
         this.sprite.body.clearShapes();
         this.sprite.body.loadPolygon('physicsData', 'hoppy');
-//        this.sprite.body.fixedRotation = true;
+        this.sprite.body.fixedRotation = true;
 
         // Make player look in the right direction.
         // This does not flip the physics data, but the player sprite is symmetric for now.
@@ -48,6 +43,27 @@ define(function() {
     }
 
     Player.prototype.constructor = Player;
+
+    Player.prototype.getStartPositionX = function() {
+        var startPosX = this.game.settings.playerStartPosition;
+        if (this.side === 'right') {
+            startPosX = this.game.world.width - startPosX;
+        }
+        return startPosX;
+    }
+
+    Player.prototype.getStartPositionY = function() {
+        return this.game.world.height - 75;
+    }
+
+    Player.prototype.moveToStart = function() {
+        this.sprite.body.x = this.getStartPositionX();
+        this.sprite.body.y = this.getStartPositionY();
+        this.sprite.body.rotation = 0;
+        this.sprite.body.setZeroForce();
+        this.sprite.body.setZeroRotation();
+        this.sprite.body.setZeroVelocity();
+    }
 
     Player.prototype.moveLeft = function() {
         this.sprite.body.moveLeft(this.game.settings.moveForce);

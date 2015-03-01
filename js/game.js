@@ -128,9 +128,11 @@ define([
         if (this.ball.touchedRightFloor > 2) {
             if (this.ball.lastServer === this.player1.id) {
                 updateScore(this.player1, this.textScorePlayer1);
-                this.ball.serve(this.player1);                            
+                this.ball.serve(this.player1);
+                placePlayers(this);
             } else {
                 this.ball.serve(this.player1);                            
+                placePlayers(this);
             }
         }
 
@@ -138,8 +140,10 @@ define([
             if (this.ball.lastServer === this.player2.id) {
                 updateScore(this.player2, this.textScorePlayer2);
                 this.ball.serve(this.player2);                            
+                placePlayers(this);
             } else {
                 this.ball.serve(this.player2);                            
+                placePlayers(this);
             }
         }
         
@@ -147,6 +151,11 @@ define([
 
         updateCommands(this);
     };
+
+    function placePlayers(parent) {
+        parent.player1.moveToStart();                        
+        parent.player2.moveToStart();                        
+    }
 
     function updateScore(player, textScore) {
         player.score++;

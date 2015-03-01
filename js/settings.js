@@ -3,6 +3,7 @@
 define(function Settings() {
     return {
             debug: false,
+            playerStartPosition: 60,
             gravity: 800,
             defaultRestitution: 0.9,
             jumpForce: 450,
