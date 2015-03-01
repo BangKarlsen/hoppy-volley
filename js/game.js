@@ -39,8 +39,8 @@ define([
 
         // Init physics
         this.game.physics.startSystem(Phaser.Physics.P2JS);
-        this.game.physics.p2.defaultRestitution = 0.9;
-        this.game.physics.p2.gravity.y = 800;
+        this.game.physics.p2.defaultRestitution = this.game.settings.defaultRestitution;
+        this.game.physics.p2.gravity.y = this.game.settings.gravity;
 
         // Init our actors
         this.ball = new Ball(this.game);
@@ -69,12 +69,16 @@ define([
             }
         }, this.ball, this.game);
 
-        var player = Math.floor(Math.random()*2+1) === 1 ? this.player1 : this.player2;
-        this.ball.serve(player);
+        var servingPlayer = findServingPlayer(this);
+        this.ball.serve(servingPlayer);
 
         initMaterials(this.player1, this.player2, this.ball, this.court, this.game);
         initScoreText(this);
     };
+
+    function findServingPlayer(game) {
+        return Math.floor(Math.random() * 2 + 1) === 1 ? game.player1 : game.player2;
+    }
 
     function initMaterials(player1, player2, ball, court, game) {
         var playerMaterial = game.physics.p2.createMaterial('playerMaterial');

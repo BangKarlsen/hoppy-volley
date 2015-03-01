@@ -21,16 +21,16 @@
         game.start();
     });
 
-    makeUiSlider('jumpForce', 426, 0, 900, 2);
-    makeUiSlider('moveForce', 200, 0, 600, 2);
-    makeUiSlider('ballWorldFriction', 0.1, 0, 1, 0.05);
-    makeUiSlider('ballWorldRestitution', 0.9, 0, 1, 0.05);
-    makeUiSlider('playerWorldFriction', 0.5, 0, 1, 0.05);
-    makeUiSlider('playerWorldRestitution', 0.3, 0, 1, 0.05);
-    makeUiSlider('playerBallFriction', 0.9, 0, 1, 0.05);
-    makeUiSlider('playerBallRestitution', 1.3, 0, 1, 0.05);
-    makeUiSlider('playerCourtFriction', 0.5, 0, 1, 0.05);
-    makeUiSlider('playerCourtRestitution', 0.3, 0, 1, 0.05);
+    //makeUiSlider('jumpForce', 426, 0, 900, 2);
+    //makeUiSlider('moveForce', 200, 0, 600, 2);
+    //makeUiSlider('ballWorldFriction', 0.1, 0, 1, 0.05);
+    //makeUiSlider('ballWorldRestitution', 0.9, 0, 1, 0.05);
+    //makeUiSlider('playerWorldFriction', 0.5, 0, 1, 0.05);
+    //makeUiSlider('playerWorldRestitution', 0.3, 0, 1, 0.05);
+    //makeUiSlider('playerBallFriction', 0.9, 0, 1, 0.05);
+    //makeUiSlider('playerBallRestitution', 1.3, 0, 1, 0.05);
+    //makeUiSlider('playerCourtFriction', 0.5, 0, 1, 0.05);
+    //makeUiSlider('playerCourtRestitution', 0.3, 0, 1, 0.05);
 
 
     function makeUiSlider(parameterName, startValue, minValue, maxValue, step) {

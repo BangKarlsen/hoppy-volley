@@ -12,7 +12,7 @@ define(function() {
         // Init physics
         game.physics.p2.enable(this.sprite, game.settings.debug);
         this.sprite.body.setCircle(this.sprite.width / 2);
-        this.sprite.body.mass = 0.5;
+        this.sprite.body.mass = game.settings.ballMass;
         this.deactivate();
 
         // Register how many times the ball has hit the floor
