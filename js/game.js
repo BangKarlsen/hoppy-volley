@@ -73,7 +73,7 @@ define([
         this.ball.serve(servingPlayer);
 
         initMaterials(this.player1, this.player2, this.ball, this.court, this.game);
-        initScoreText(this);
+        initScoreText.apply(this);
     };
 
     function findServingPlayer(game) {
@@ -109,19 +109,19 @@ define([
         playerCourtContactMaterial.restitution = game.settings.playerCourtRestitution;
     }
 
-    function initScoreText(parent) {
+    function initScoreText() {
         var style = {
             font: '20px Arial',
             fill: '#ffffff'
         };
 
-        style.align = parent.player1.side;
-        parent.textNamePlayer1 = parent.game.add.text(75, 32, parent.player1.name, style);
-        parent.textScorePlayer1 = parent.game.add.text(45, 32, '' + parent.player1.score, style);
+        style.align = this.player1.side;
+        this.textNamePlayer1 = this.game.add.text(75, 32, this.player1.name, style);
+        this.textScorePlayer1 = this.game.add.text(45, 32, '' + this.player1.score, style);
 
-        style.align = parent.player2.side;
-        parent.textNamePlayer2 = parent.game.add.text(parent.game.width - 110, 32, parent.player2.name, style);
-        parent.textScorePlayer2 = parent.game.add.text(parent.game.width - 45, 32, '' + parent.player2.score, style);
+        style.align = this.player2.side;
+        this.textNamePlayer2 = this.game.add.text(this.game.width - 110, 32, this.player2.name, style);
+        this.textScorePlayer2 = this.game.add.text(this.game.width - 45, 32, '' + this.player2.score, style);
     }
 
     Game.prototype.update = function () {
