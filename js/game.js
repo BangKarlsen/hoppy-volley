@@ -69,44 +69,44 @@ define([
             }
         }, this.ball, this.game);
 
-        var servingPlayer = findServingPlayer(this);
+        var servingPlayer = findServingPlayer.apply(this);
         this.ball.serve(servingPlayer);
 
-        initMaterials(this.player1, this.player2, this.ball, this.court, this.game);
+        initMaterials.apply(this);
         initScoreText.apply(this);
     };
 
-    function findServingPlayer(game) {
-        return Math.floor(Math.random() * 2 + 1) === 1 ? game.player1 : game.player2;
+    function findServingPlayer() {
+        return Math.floor(Math.random() * 2 + 1) === 1 ? this.player1 : this.player2;
     }
 
-    function initMaterials(player1, player2, ball, court, game) {
-        var playerMaterial = game.physics.p2.createMaterial('playerMaterial');
-        var ballMaterial = game.physics.p2.createMaterial('ballMaterial', ball.sprite.body);
-        var worldMaterial = game.physics.p2.createMaterial('worldMaterial');
-        var courtMaterial = game.physics.p2.createMaterial('courtMaterial', court.floorSprite.body);
+    function initMaterials() {
+        var playerMaterial = this.game.physics.p2.createMaterial('playerMaterial');
+        var ballMaterial = this.game.physics.p2.createMaterial('ballMaterial', this.ball.sprite.body);
+        var worldMaterial = this.game.physics.p2.createMaterial('worldMaterial');
+        var courtMaterial = this.game.physics.p2.createMaterial('courtMaterial', this.court.floorSprite.body);
 
-        player1.sprite.body.setMaterial(playerMaterial);
-        player2.sprite.body.setMaterial(playerMaterial);
+        this.player1.sprite.body.setMaterial(playerMaterial);
+        this.player2.sprite.body.setMaterial(playerMaterial);
 
         //  4 trues = the 4 faces of the world in left, right, top, bottom order
-        game.physics.p2.setWorldMaterial(worldMaterial, true, true, true, true);
+        this.game.physics.p2.setWorldMaterial(worldMaterial, true, true, true, true);
 
-        var ballWorldContactMaterial = game.physics.p2.createContactMaterial(ballMaterial, worldMaterial);
-        ballWorldContactMaterial.friction = game.settings.ballWorldFriction; // Friction to use in the contact of these two materials.
-        ballWorldContactMaterial.restitution = game.settings.ballWorldRestitution; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+        var ballWorldContactMaterial = this.game.physics.p2.createContactMaterial(ballMaterial, worldMaterial);
+        ballWorldContactMaterial.friction = this.game.settings.ballWorldFriction; // Friction to use in the contact of these two materials.
+        ballWorldContactMaterial.restitution = this.game.settings.ballWorldRestitution; // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 
-        var playerWorldContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
-        playerWorldContactMaterial.friction = game.settings.playerWorldFriction;
-        playerWorldContactMaterial.restitution = game.settings.playerWorldRestitution;
+        var playerWorldContactMaterial = this.game.physics.p2.createContactMaterial(playerMaterial, worldMaterial);
+        playerWorldContactMaterial.friction = this.game.settings.playerWorldFriction;
+        playerWorldContactMaterial.restitution = this.game.settings.playerWorldRestitution;
 
-        var playerBallContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
-        playerBallContactMaterial.friction = game.settings.playerBallFriction;
-        playerBallContactMaterial.restitution = game.settings.playerBallRestitution;
+        var playerBallContactMaterial = this.game.physics.p2.createContactMaterial(playerMaterial, ballMaterial);
+        playerBallContactMaterial.friction = this.game.settings.playerBallFriction;
+        playerBallContactMaterial.restitution = this.game.settings.playerBallRestitution;
 
-        var playerCourtContactMaterial = game.physics.p2.createContactMaterial(playerMaterial, courtMaterial);
-        playerCourtContactMaterial.friction = game.settings.playerCourtFriction;
-        playerCourtContactMaterial.restitution = game.settings.playerCourtRestitution;
+        var playerCourtContactMaterial = this.game.physics.p2.createContactMaterial(playerMaterial, courtMaterial);
+        playerCourtContactMaterial.friction = this.game.settings.playerCourtFriction;
+        playerCourtContactMaterial.restitution = this.game.settings.playerCourtRestitution;
     }
 
     function initScoreText() {
@@ -129,10 +129,10 @@ define([
             if (this.ball.lastServer === this.player1.id) {
                 updateScore(this.player1, this.textScorePlayer1);
                 this.ball.serve(this.player1);
-                placePlayers(this);
+                placePlayers.apply(this);
             } else {
                 this.ball.serve(this.player1);                            
-                placePlayers(this);
+                placePlayers.apply(this);
             }
         }
 
@@ -140,21 +140,21 @@ define([
             if (this.ball.lastServer === this.player2.id) {
                 updateScore(this.player2, this.textScorePlayer2);
                 this.ball.serve(this.player2);                            
-                placePlayers(this);
+                placePlayers.apply(this);
             } else {
                 this.ball.serve(this.player2);                            
-                placePlayers(this);
+                placePlayers.apply(this);
             }
         }
         
         // check for max number of touches here
 
-        updateCommands(this);
+        updateCommands.apply(this);
     };
 
-    function placePlayers(parent) {
-        parent.player1.moveToStart();                        
-        parent.player2.moveToStart();                        
+    function placePlayers() {
+        this.player1.moveToStart();                        
+        this.player2.moveToStart();                        
     }
 
     function updateScore(player, textScore) {
@@ -163,12 +163,12 @@ define([
         console.log(player.name + ': ' + player.score);
     }
 
-    function updateCommands(parent) {
+    function updateCommands() {
         var commands = [];
 
         // get commands from input
-        commands = handleInput(commands, parent.player1, parent.game);
-        commands = handleInput(commands, parent.player2, parent.game);
+        commands = handleInput(commands, this.player1, this.game);
+        commands = handleInput(commands, this.player2, this.game);
 
         // execute commands
         commands.forEach(function (command) {
