@@ -15,7 +15,6 @@ define(function() {
 
         this.sprite.body.clearShapes();
         this.sprite.body.loadPolygon('physicsData', 'hoppy');
-        this.sprite.body.fixedRotation = true;
 
         // Make player look in the right direction.
         // This does not flip the physics data, but the player sprite is symmetric for now.
