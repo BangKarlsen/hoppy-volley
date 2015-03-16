@@ -126,24 +126,22 @@ define([
 
     Game.prototype.update = function () {
         if (this.ball.touchedRightFloor > 2) {
+            placePlayers.apply(this);
             if (this.ball.lastServer === this.player1.id) {
                 updateScore(this.player1, this.textScorePlayer1);
                 this.ball.serve(this.player1);
-                placePlayers.apply(this);
             } else {
                 this.ball.serve(this.player1);                            
-                placePlayers.apply(this);
             }
         }
 
         if (this.ball.touchedLeftFloor > 2) {
+            placePlayers.apply(this);
             if (this.ball.lastServer === this.player2.id) {
                 updateScore(this.player2, this.textScorePlayer2);
                 this.ball.serve(this.player2);                            
-                placePlayers.apply(this);
             } else {
                 this.ball.serve(this.player2);                            
-                placePlayers.apply(this);
             }
         }
         
