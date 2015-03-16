@@ -178,19 +178,13 @@ define([
 
     function handleInput(commands, player, game) {
         if (game.input.keyboard.isDown(player.input.left)) {
-            commands.push(function moveLeftCommand() {
-                player.moveLeft();
-            });
+            commands.push(player.moveLeft.bind(player));
         }
         if (game.input.keyboard.isDown(player.input.right)) {
-            commands.push(function moveRightCommand() {
-                player.moveRight();
-            });
+            commands.push(player.moveRight.bind(player));
         }
         if (game.input.keyboard.isDown(player.input.jump) && player.canJump()) {
-            commands.push(function jumpCommand() {
-                player.jump();
-            });
+            commands.push(player.jump.bind(player));
         }
         return commands;
     }
