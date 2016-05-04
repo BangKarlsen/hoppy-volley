@@ -1,8 +1,8 @@
 'use strict';
 
 define([
-    'phaser', 'ball', 'court', 'player', 'settings'
-], function (Phaser, Ball, Court, Player, Settings) {
+    'phaser', 'ball', 'court', 'player', 'settings', 'ai'
+], function (Phaser, Ball, Court, Player, Settings, AI) {
     function Game() {
         console.log('Making the Game');
     }
@@ -42,9 +42,10 @@ define([
         this.game.physics.p2.defaultRestitution = this.game.settings.defaultRestitution;
         this.game.physics.p2.gravity.y = this.game.settings.gravity;
 
-        // Init our actors
+        // Init rest of the game
         this.ball = new Ball(this.game);
         this.court = new Court(this.game);
+        this.ai = new AI(this.game);
         this.player1 = new Player({
             id: 1,
             name: 'Bobby',
@@ -62,22 +63,22 @@ define([
             name: 'Tobby',
             side: 'right',
             input: {
-                type: 'keyboard',
+                type: 'ai',
                 left: Phaser.Keyboard.LEFT,
                 right: Phaser.Keyboard.RIGHT,
                 jump: Phaser.Keyboard.UP
             }
         }, this.ball, this.game);
 
-        var servingPlayer = findServingPlayer.apply(this);
+        var servingPlayer = findServingPlayer(this);
         this.ball.serve(servingPlayer);
 
         initMaterials.apply(this);
         initScoreText.apply(this);
     };
 
-    function findServingPlayer() {
-        return Math.floor(Math.random() * 2 + 1) === 1 ? this.player1 : this.player2;
+    function findServingPlayer(Game) {
+        return Math.floor(Math.random() * 2 + 1) === 1 ? Game.player1 : Game.player2;
     }
 
     function initMaterials() {
@@ -147,7 +148,7 @@ define([
         
         // check for max number of touches here
 
-        updateCommands.apply(this);
+        handleCommands(this);
     };
 
     function placePlayers() {
@@ -161,12 +162,14 @@ define([
         console.log(player.name + ': ' + player.score);
     }
 
-    function updateCommands() {
-        var commands = [];
+    function handleCommands(Game) {
+        var commands = [],
+            player2commands;
 
-        // get commands from input
-        commands = handleInput(commands, this.player1, this.game);
-        commands = handleInput(commands, this.player2, this.game);
+        commands = getCommands(Game.player1, Game.game, Game.ai);
+        player2commands = getCommands(Game.player2, Game.game, Game.ai);
+        
+        Array.prototype.push.apply(commands, player2commands);
 
         // execute commands
         commands.forEach(function (command) {
@@ -174,16 +177,32 @@ define([
         });
     }
 
-    function handleInput(commands, player, game) {
-        if (game.input.keyboard.isDown(player.input.left)) {
-            commands.push(player.moveLeft.bind(player));
+    function getCommands(player, game, ai) {
+        var commands = [];
+
+        function handleInput() {
+            if (game.input.keyboard.isDown(player.input.left)) {
+                commands.push(player.moveLeft.bind(player));
+            }
+            if (game.input.keyboard.isDown(player.input.right)) {
+                commands.push(player.moveRight.bind(player));
+            }
+            if (game.input.keyboard.isDown(player.input.jump) && player.canJump()) {
+                commands.push(player.jump.bind(player));
+            }            
         }
-        if (game.input.keyboard.isDown(player.input.right)) {
-            commands.push(player.moveRight.bind(player));
-        }
-        if (game.input.keyboard.isDown(player.input.jump) && player.canJump()) {
-            commands.push(player.jump.bind(player));
-        }
+
+        switch (player.input.type) {
+            case 'keyboard':
+                handleInput();
+                break;
+            case 'ai':
+                Array.prototype.push.apply(commands, ai.getCommands(player));
+                break;
+            default:
+                console.log('Error: Unknown input type.');
+        } 
+        
         return commands;
     }
 
