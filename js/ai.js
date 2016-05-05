@@ -9,9 +9,9 @@ define(function() {
 
     AI.prototype.getCommands = function(player) {
         var commands = [];
-        if (player.canJump()) {
-            commands.push(player.jump.bind(player));
-        }
+
+        commands.push(player.jump.bind(player));
+
         return commands;
     }
 

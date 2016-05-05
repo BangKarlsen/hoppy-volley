@@ -187,7 +187,7 @@ define([
             if (game.input.keyboard.isDown(player.input.right)) {
                 commands.push(player.moveRight.bind(player));
             }
-            if (game.input.keyboard.isDown(player.input.jump) && player.canJump()) {
+            if (game.input.keyboard.isDown(player.input.jump)) {
                 commands.push(player.jump.bind(player));
             }            
         }
@@ -202,7 +202,7 @@ define([
             default:
                 console.log('Error: Unknown input type.');
         } 
-        
+
         return commands;
     }
 

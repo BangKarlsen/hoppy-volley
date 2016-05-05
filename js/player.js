@@ -73,30 +73,33 @@ define(function() {
     };
 
     Player.prototype.jump = function() {
-        this.sprite.body.moveUp(this.game.settings.jumpForce);
-    };
+        // Only allow the player to jump if he is touching the ground.
+        // Code is from 'tilemap gravity' example, no idea why it works...
+        function canJump(Player) {
+            var yAxis = p2.vec2.fromValues(0, 1);
+            var result = false;
 
-    // Only allow the player to jump if he is touching the ground.
-    // Code is from 'tilemap gravity' example, no idea why it works...
-    Player.prototype.canJump = function() {
-        var yAxis = p2.vec2.fromValues(0, 1);
-        var result = false;
+            for (var i = 0; i < Player.game.physics.p2.world.narrowphase.contactEquations.length; i++) {
+                var c = Player.game.physics.p2.world.narrowphase.contactEquations[i];
 
-        for (var i = 0; i < this.game.physics.p2.world.narrowphase.contactEquations.length; i++) {
-            var c = this.game.physics.p2.world.narrowphase.contactEquations[i];
-
-            if (c.bodyA === this.sprite.body.data || c.bodyB === this.sprite.body.data) {
-                var d = p2.vec2.dot(c.normalA, yAxis); // Normal dot Y-axis
-                if (c.bodyA === this.sprite.body.data) {
-                    d *= -1;
-                }
-                if (d > 0.5) {
-                    result = true;
+                if (c.bodyA === Player.sprite.body.data || c.bodyB === Player.sprite.body.data) {
+                    var d = p2.vec2.dot(c.normalA, yAxis); // Normal dot Y-axis
+                    if (c.bodyA === Player.sprite.body.data) {
+                        d *= -1;
+                    }
+                    if (d > 0.5) {
+                        result = true;
+                    }
                 }
             }
+            return result;
+        };
+
+        if (canJump(this)) {
+            this.sprite.body.moveUp(this.game.settings.jumpForce);
         }
-        return result;
     };
+
 
     return Player;
 });
