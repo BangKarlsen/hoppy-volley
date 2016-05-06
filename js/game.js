@@ -117,37 +117,31 @@ define([
         };
 
         style.align = this.player1.side;
-        this.textNamePlayer1 = this.game.add.text(75, 32, this.player1.name, style);
-        this.textScorePlayer1 = this.game.add.text(45, 32, '' + this.player1.score, style);
+        this.player1.displayName = this.game.add.text(75, 32, this.player1.name, style);
+        this.player1.displayScore = this.game.add.text(45, 32, '' + this.player1.score, style);
 
         style.align = this.player2.side;
-        this.textNamePlayer2 = this.game.add.text(this.game.width - 110, 32, this.player2.name, style);
-        this.textScorePlayer2 = this.game.add.text(this.game.width - 45, 32, '' + this.player2.score, style);
+        this.player2.displayName = this.game.add.text(this.game.width - 110, 32, this.player2.name, style);
+        this.player2.displayScore = this.game.add.text(this.game.width - 45, 32, '' + this.player2.score, style);
     }
 
     Game.prototype.update = function () {
         if (this.ball.touchedRightFloor > 2) {
-            placePlayers.apply(this);
             if (this.ball.lastServer === this.player1.id) {
-                updateScore(this.player1, this.textScorePlayer1);
-                this.ball.serve(this.player1);
-            } else {
-                this.ball.serve(this.player1);                            
+                this.player1.incrementScore();
             }
+            this.ball.serve(this.player1);                               
+            placePlayers.apply(this);
         }
 
         if (this.ball.touchedLeftFloor > 2) {
-            placePlayers.apply(this);
             if (this.ball.lastServer === this.player2.id) {
-                updateScore(this.player2, this.textScorePlayer2);
-                this.ball.serve(this.player2);                            
-            } else {
-                this.ball.serve(this.player2);                            
+                this.player2.incrementScore();
             }
+            this.ball.serve(this.player2);                            
+            placePlayers.apply(this);
         }
         
-        // check for max number of touches here
-
         handleCommands(this);
     };
 
@@ -156,18 +150,13 @@ define([
         this.player2.moveToStart();                        
     }
 
-    function updateScore(player, textScore) {
-        player.score++;
-        textScore.text = '' + player.score;
-        console.log(player.name + ': ' + player.score);
-    }
 
     function handleCommands(Game) {
         var commands = [],
             player2commands;
 
-        commands = getCommands(Game.player1, Game.game, Game.ai);
-        player2commands = getCommands(Game.player2, Game.game, Game.ai);
+        commands = getCommandsForPlayer(Game.player1, Game.game, Game.ai, Game.ball);
+        player2commands = getCommandsForPlayer(Game.player2, Game.game, Game.ai, Game.ball);
         
         Array.prototype.push.apply(commands, player2commands);
 
@@ -177,7 +166,7 @@ define([
         });
     }
 
-    function getCommands(player, game, ai) {
+    function getCommandsForPlayer(player, game, ai, ball) {
         var commands = [];
 
         function handleInput() {
@@ -197,7 +186,7 @@ define([
                 handleInput();
                 break;
             case 'ai':
-                Array.prototype.push.apply(commands, ai.getCommands(player));
+                Array.prototype.push.apply(commands, ai.getCommands(player, ball));
                 break;
             default:
                 console.log('Error: Unknown input type.');

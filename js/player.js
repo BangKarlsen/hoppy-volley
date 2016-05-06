@@ -99,7 +99,11 @@ define(function() {
             this.sprite.body.moveUp(this.game.settings.jumpForce);
         }
     };
-
+    
+    Player.prototype.incrementScore = function() {
+        this.score++;
+        this.displayScore.text = this.score + '';
+    }
 
     return Player;
 });
