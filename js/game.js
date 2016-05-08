@@ -130,7 +130,7 @@ define([
             if (this.ball.lastServer === this.player1.id) {
                 this.player1.incrementScore();
             }
-            this.ball.serve(this.player1);                               
+            this.ball.serve(this.player1);                              
             placePlayers.apply(this);
         }
 

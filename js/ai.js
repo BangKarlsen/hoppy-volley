@@ -7,10 +7,11 @@ define(function() {
 
     AI.prototype.constructor = AI;
 
-    AI.prototype.getCommands = function(player) {
+    AI.prototype.getCommands = function(player, ball) {
         var commands = [];
 
         commands.push(player.jump.bind(player));
+        // if (!ball.isActive()) {}
 
         return commands;
     }

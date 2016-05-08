@@ -53,11 +53,10 @@ define(function() {
     Ball.prototype.serve = function(player) {
         if (player.side === 'left') {
             this.sprite.body.x = this.game.world.width / 4;
-            this.deactivate();
         } else {
             this.sprite.body.x = this.game.world.width - (this.game.world.width / 4);
-            this.deactivate();
         }
+        this.deactivate();
         this.sprite.body.y = this.game.world.height - (this.game.world.height / 3);
         this.touchedLeftFloor = 0;
         this.touchedRightFloor = 0;
