@@ -38,6 +38,15 @@ define(function() {
 
     Ball.prototype.constructor = Ball;
 
+
+    Ball.prototype.x = function () {
+        return this.sprite.body.x;
+    }
+
+    Ball.prototype.y = function () {
+        return this.sprite.body.y;
+    }
+
     Ball.prototype.isActive = false;
 
     Ball.prototype.activate = function() {

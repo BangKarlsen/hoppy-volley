@@ -51,7 +51,7 @@ define([
             name: 'Bobby',
             side: 'left',
             input: {
-                type: 'keyboard',
+                type: 'ai',
                 left: Phaser.Keyboard.A,
                 right: Phaser.Keyboard.D,
                 jump: Phaser.Keyboard.W
@@ -70,7 +70,7 @@ define([
             }
         }, this.ball, this.game);
 
-        var servingPlayer = findServingPlayer(this);
+        var servingPlayer = this.player1; //findServingPlayer(this);
         this.ball.serve(servingPlayer);
 
         initMaterials.apply(this);

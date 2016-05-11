@@ -43,6 +43,14 @@ define(function() {
 
     Player.prototype.constructor = Player;
 
+    Player.prototype.x = function () {
+        return this.sprite.body.x;  
+    }
+
+    Player.prototype.y = function () {
+        return this.sprite.body.y;  
+    }
+
     Player.prototype.getStartPositionX = function() {
         var startPosX = this.game.settings.playerStartPosition;
         if (this.side === 'right') {
