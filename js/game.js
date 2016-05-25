@@ -39,7 +39,7 @@ define([
 
         // Init physics
         this.game.physics.startSystem(Phaser.Physics.P2JS);
-        this.game.physics.p2.defaultRestitution = this.game.settings.defaultRestitution;
+        this.game.physics.p2.restitution = this.game.settings.defaultRestitution;
         this.game.physics.p2.gravity.y = this.game.settings.gravity;
 
         // Init rest of the game
