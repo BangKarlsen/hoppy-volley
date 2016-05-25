@@ -1,2 +1,2 @@
 #!/bin/bash
-/opt/local/bin/http-server
+/opt/local/bin/live-server
