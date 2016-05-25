@@ -57,12 +57,13 @@ define(function() {
     Ball.prototype.isActive = false;
 
     Ball.prototype.activate = function() {
-        this.sprite.body.motionState = 1; // DYNAMIC
+        this.sprite.body.data.type = 1; // DYNAMIC
         this.isActive = true;
     };
 
     Ball.prototype.deactivate = function() {
-        this.sprite.body.motionState = 2; // STATIC
+        this.sprite.body.data.type = 2; // STATIC
+        this.sprite.body.setZeroVelocity();
         this.isActive = false;
     };
 
