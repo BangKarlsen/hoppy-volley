@@ -47,6 +47,13 @@ define(function() {
         return this.sprite.body.y;
     }
 
+    Ball.prototype.pos = function () {
+        return {
+            x: this.sprite.body.x,
+            y: this.sprite.body.y
+        };
+    }
+
     Ball.prototype.isActive = false;
 
     Ball.prototype.activate = function() {

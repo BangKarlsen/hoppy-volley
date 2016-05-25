@@ -51,7 +51,7 @@ define([
             name: 'Bobby',
             side: 'left',
             input: {
-                type: 'ai',
+                type: 'keyboard',
                 left: Phaser.Keyboard.A,
                 right: Phaser.Keyboard.D,
                 jump: Phaser.Keyboard.W
@@ -63,7 +63,7 @@ define([
             name: 'Tobby',
             side: 'right',
             input: {
-                type: 'ai',
+                type: 'keyboard',
                 left: Phaser.Keyboard.LEFT,
                 right: Phaser.Keyboard.RIGHT,
                 jump: Phaser.Keyboard.UP
@@ -138,7 +138,8 @@ define([
             if (this.ball.lastServer === this.player2.id) {
                 this.player2.incrementScore();
             }
-            this.ball.serve(this.player2);                            
+            this.ball.serve(this.player1);                            
+            // this.ball.serve(this.player2);                            
             placePlayers.apply(this);
         }
         

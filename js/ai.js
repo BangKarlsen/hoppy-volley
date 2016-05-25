@@ -7,10 +7,16 @@ define(function() {
 
     AI.prototype.constructor = AI;
 
-    function aiServe(player, ball) {
+    function distance(pos1, pos2) {
+        return Math.sqrt((pos2.x - pos1.x) * (pos2.x - pos1.x) + (pos2.y - pos1.y) * (pos2.y - pos1.y));
+    }
+
+    function doServe(player, ball) {
         var commands = [];
         if (player.side === 'left') {
-            if (player.x() > ball.x() - 30) {
+            console.log('dist ' + distance(player.pos(), ball.pos()));
+            if (distance(player.pos(), ball.pos()) < 95) {
+                console.log('jmp!');
                 commands.push(player.jump.bind(player));
             } else {
                 commands.push(player.moveRight.bind(player));
@@ -30,7 +36,7 @@ define(function() {
 
         if (!ball.isActive) {
             if (ball.lastServer === player.id) {
-                return aiServe(player, ball);
+                return doServe(player, ball);
             }
         }
 

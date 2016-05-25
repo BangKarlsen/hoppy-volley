@@ -51,6 +51,13 @@ define(function() {
         return this.sprite.body.y;  
     }
 
+    Player.prototype.pos = function () {
+        return {
+            x: this.sprite.body.x,
+            y: this.sprite.body.y
+        };
+    }
+
     Player.prototype.getStartPositionX = function() {
         var startPosX = this.game.settings.playerStartPosition;
         if (this.side === 'right') {
