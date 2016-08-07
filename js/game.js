@@ -34,48 +34,10 @@ define([
         this.game.load.physics('physicsData', 'assets/hoppy_physics.json');
     };
 
-    Game.prototype.create = function () {
-        this.game.add.sprite(0, 0, 'sky');
-
-        // Init physics
-        this.game.physics.startSystem(Phaser.Physics.P2JS);
-        this.game.physics.p2.restitution = this.game.settings.defaultRestitution;
-        this.game.physics.p2.gravity.y = this.game.settings.gravity;
-
-        // Init rest of the game
-        this.ball = new Ball(this.game);
-        this.court = new Court(this.game);
-        this.ai = new AI(this.game);
-        this.player1 = new Player({
-            id: 1,
-            name: 'Bobby',
-            side: 'left',
-            input: {
-                type: 'keyboard',
-                left: Phaser.Keyboard.A,
-                right: Phaser.Keyboard.D,
-                jump: Phaser.Keyboard.W
-            }
-        }, this.ball, this.game);
-
-        this.player2 = new Player({
-            id: 2,
-            name: 'Tobby',
-            side: 'right',
-            input: {
-                type: 'keyboard',
-                left: Phaser.Keyboard.LEFT,
-                right: Phaser.Keyboard.RIGHT,
-                jump: Phaser.Keyboard.UP
-            }
-        }, this.ball, this.game);
-
-        var servingPlayer = this.player1; //findServingPlayer(this);
-        this.ball.serve(servingPlayer);
-
-        initMaterials.apply(this);
-        initScoreText.apply(this);
-    };
+    function togglePause() {
+        console.log('toggle paused');
+        this.game.paused = !this.game.paused;
+    }
 
     function findServingPlayer(Game) {
         return Math.floor(Math.random() * 2 + 1) === 1 ? Game.player1 : Game.player2;
@@ -125,6 +87,56 @@ define([
         this.player2.displayScore = this.game.add.text(this.game.width - 45, 32, '' + this.player2.score, style);
     }
 
+    Game.prototype.create = function () {
+        this.game.add.sprite(0, 0, 'sky');
+
+        // Init physics
+        this.game.physics.startSystem(Phaser.Physics.P2JS);
+        this.game.physics.p2.restitution = this.game.settings.defaultRestitution;
+        this.game.physics.p2.gravity.y = this.game.settings.gravity;
+
+        // Init rest of the game
+        this.ball = new Ball(this.game);
+        this.court = new Court(this.game);
+        this.ai = new AI(this.game);
+        this.player1 = new Player({
+            id: 1,
+            name: 'Bobby',
+            side: 'left',
+            input: {
+                type: 'ai',
+                left: Phaser.Keyboard.A,
+                right: Phaser.Keyboard.D,
+                jump: Phaser.Keyboard.W
+            }
+        }, this.ball, this.game);
+
+        this.player2 = new Player({
+            id: 2,
+            name: 'Tobby',
+            side: 'right',
+            input: {
+                type: 'ai',
+                left: Phaser.Keyboard.LEFT,
+                right: Phaser.Keyboard.RIGHT,
+                jump: Phaser.Keyboard.UP
+            }
+        }, this.ball, this.game);
+
+        var servingPlayer = findServingPlayer(this);
+        var servingPlayer = this.player1;
+        this.ball.serve(servingPlayer);
+
+        initMaterials.apply(this);
+        initScoreText.apply(this);
+
+        var pauseKey = this.game.input.keyboard.addKey(Phaser.Keyboard.P);
+        pauseKey.onDown.add(togglePause, this);
+    };
+
+    /*
+     *  MAIN UPDATE LOOP HERE
+     */
     Game.prototype.update = function () {
         if (this.ball.touchedRightFloor > 2) {
             if (this.ball.lastServer === this.player1.id) {
@@ -138,8 +150,8 @@ define([
             if (this.ball.lastServer === this.player2.id) {
                 this.player2.incrementScore();
             }
-            this.ball.serve(this.player1);                            
-            // this.ball.serve(this.player2);                            
+            // this.ball.serve(this.player1);                            
+            this.ball.serve(this.player2);                            
             placePlayers.apply(this);
         }
         
@@ -148,9 +160,9 @@ define([
 
     function placePlayers() {
         this.player1.moveToStart();                        
-        this.player2.moveToStart();                        
+        this.player2.moveToStart();  
+        isJumping = false;                      
     }
-
 
     function handleCommands(Game) {
         var commands = [],
